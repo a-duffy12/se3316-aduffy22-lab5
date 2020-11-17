@@ -10,6 +10,8 @@ import { LoginComponent } from './login/login.component';
 import { OpenComponent } from './open/open.component';
 import { SecureComponent } from './secure/secure.component';
 import { AdminComponent } from './admin/admin.component';
+import { AuthModule } from '@auth0/auth0-angular';
+import { AuthButtonComponent} from './auth-button/auth-button.component';
 
 @NgModule({
   declarations: [
@@ -17,13 +19,20 @@ import { AdminComponent } from './admin/admin.component';
     LoginComponent,
     OpenComponent,
     SecureComponent,
-    AdminComponent
+    AdminComponent,
+    AuthButtonComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-    FormsModule
+    FormsModule,
+
+    // import auth0 module into the application with specified configuration
+    AuthModule.forRoot({
+      domain: 'dev-7wim8ia3.us.auth0.com',
+      clientId: 'VCvWBGbyOJ6zmfNWfUhcfpAkiE0H1K0D'
+    })
   ],
   providers: [Validator],
   bootstrap: [AppComponent]

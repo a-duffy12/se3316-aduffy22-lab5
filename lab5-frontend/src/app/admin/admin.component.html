@@ -1,1 +1,4 @@
 <p>admin works!</p>
+<ul *ngIf="auth.user$ | async as user">
+  <p>Fancy Admin Stuff</p>
+</ul>

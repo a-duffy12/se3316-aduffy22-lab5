@@ -1,1 +1,6 @@
 <p>login works!</p>
+<auth-button></auth-button>
+<ul *ngIf="auth.user$ | async as user">
+  <li>{{ user.name }}</li>
+  <li>{{ user.email }}</li>
+</ul>
