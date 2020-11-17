@@ -15,7 +15,10 @@
             }
         ],
         "name": "sample",
+        "creator": "aduffy22@uwo.ca",
         "visibility": "public",
-        "description": ""
+        "description": "sample schedule",
+        "date_modified": "2020-11-17",
+        "infringing": "false"
     }
 ]

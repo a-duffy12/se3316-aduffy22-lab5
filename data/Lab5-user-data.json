@@ -1,8 +1,10 @@
 [
     {
         "name": "Aiden",
-        "email": "",
-        "password": "password",
-        "new_password": "password"
+        "email": "aduffy22@uwo.ca",
+        "password": "pa$$word",
+        "new_password": "pa$$word",
+        "active": "true",
+        "permission_level": "admin"
     }
 ]

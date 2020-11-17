@@ -8,8 +8,9 @@ const sfile = "./data/Lab5-schedule-data.json"; // file holding json data for sc
 const ufile = "./data/Lab5-user-data.json"; // file holding json data for users
 
 const app = express(); // create app constant
-const crouter = express.Router(); // create router obejct for courses
-const srouter = express.Router(); // create router object for schedules
+const orouter = express.Router(); // create router object for open routes
+const srouter = express.Router(); // create router object for secure routes
+const arouter = express.Router(); // create router object for admin routes
 const cdata = JSON.parse(JSON.stringify(j1data)); // parse json object holding the courses
 
 const corsOptions = { // options for cors
@@ -17,12 +18,9 @@ const corsOptions = { // options for cors
     optionsSuccessStatus: 200
 }
 
-ocrouter.use(express.json()); // allows express to parse json objects (middleware)
-osrouter.use(express.json()); // allows express to parse json objects (middleware)
-scrouter.use(express.json()); // allows express to parse json objects (middleware)
-ssrouter.use(express.json()); // allows express to parse json objects (middleware)
-acrouter.use(express.json()); // allows express to parse json objects (middleware)
-asrouter.use(express.json()); // allows express to parse json objects (middleware)
+crouter.use(express.json()); // allows express to parse json objects (middleware)
+srouter.use(express.json()); // allows express to parse json objects (middleware)
+arouter.use(express.json()); // allows express to parse json objects (middleware)
 
 app.use("/", express.static("static")); // folder where client-side code is stored
 
@@ -33,12 +31,38 @@ app.use((req, res, next) => { // middleware function to do console logs
     next(); // continue processeing
 });
 
-app.use("/api/open/courses", ocrouter); // install router object path for courses
-app.use("/api/open/schedules", osrouter) // install router object path for schedules
-app.use("/api/secure/courses", scrouter); // install router object path for courses
-app.use("/api/secure/schedules", ssrouter) // install router object path for schedules
-app.use("/api/admin/courses", acrouter); // install router object path for courses
-app.use("/api/admin/schedules", asrouter) // install router object path for schedules
+// OPEN ROUTES
+
+// create an account POST
+// login to existing account POST
+// third part sign in POST
+// email verification (with back en email validation)
+// search for courses based on subject, course number, catalog number, or both GET
+// expanded search results for the above GET
+// search based on a keyword of 5+ chars GET
+// display all public schedules GET
+// search for a given schedule data GET
+// display timetable data for a given public schedule GET
+
+
+// SECURE ROUTES
+
+// create a new schedule POST
+// update an existing schedule PUT
+// delete an exisitng schedule DELETE
+// add a review for a specific course POST
+
+
+// ADMIN ROUTES
+
+// give admin status to a given user PUT
+// hide and un-hide course reviews PUT
+// activate and deactivate a given user PUT
+
+
+app.use("/api/open", orouter); // install router object path for open routes
+app.use("/api/secure", srouter) // install router object path for secure routes
+app.use("/api/admin", arouter); // install router object path for admin routes
 
 // get PORT environment variable, or use 3000 if not available
 const port = process.env.PORT || 3000;
@@ -67,7 +91,7 @@ function setData(array, file)
 // function to alphanumeric input
 function sanitizeInput(input, l) 
 { 
-    // limit is 1000 characters, as test cases with 15 courses (max amount) were always in the range of 700-800 characters
+    // variable character limit
     if (String(input).includes("<") || String(input).includes(">") || String(input).includes("^") || String(input).includes(".") || String(input).includes("/") || String(input).includes("(") || String(input).includes(")") || String(input).includes("*") || String(input).includes("'") || String(input).includes("_") || String(input).includes("=") || String(input).includes("$") || String(input).includes("?") || String(input).includes("!") || String(input).includes("%") || String(input).includes("\"") || String(input).includes("`") || String(input).includes("+") || String(input).includes("|") || String(input).includes("&") || String(input).length >= l || String(input).length < 1)
     {
         return false;
