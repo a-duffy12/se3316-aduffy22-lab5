@@ -35,10 +35,8 @@ app.use((req, res, next) => { // middleware function to do console logs
 
 // OPEN ROUTES
 
+// search for an account GET
 // create an account POST
-// login to existing account POST
-// third part sign in POST
-// email verification (with back en email validation)
 // search for courses based on subject, course number, catalog number, or both GET
 // expanded search results for the above GET
 // search based on a keyword of 5+ chars GET

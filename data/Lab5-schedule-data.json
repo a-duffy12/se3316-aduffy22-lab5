@@ -19,6 +19,6 @@
         "visibility": "public",
         "description": "sample schedule",
         "date_modified": "2020-11-17",
-        "infringing": "false"
+        "infringing": false
     }
 ]

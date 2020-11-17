@@ -3,8 +3,7 @@
         "name": "Aiden",
         "email": "aduffy22@uwo.ca",
         "password": "pa$$word",
-        "new_password": "pa$$word",
-        "active": "true",
+        "active": true,
         "permission_level": "admin"
     }
 ]
