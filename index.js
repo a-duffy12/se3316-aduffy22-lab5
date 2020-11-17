@@ -4,8 +4,10 @@ const cors = require("cors"); // get cors module
 const j1data = require("./data/Lab5-timetable-data.json"); // json data for courses
 const j2data = require("./data/Lab5-schedule-data.json"); // json data for schedules
 const j3data = require("./Lab5-user-data.json"); // json data for users
+const j4data = require("./Lab5-courses-comments-data.json") // json data for course comments
 const sfile = "./data/Lab5-schedule-data.json"; // file holding json data for scehdules
 const ufile = "./data/Lab5-user-data.json"; // file holding json data for users
+const rfile = "./data/Lab5-courses-comments-data.json"; // file holding data for course comments
 
 const app = express(); // create app constant
 const orouter = express.Router(); // create router object for open routes
@@ -18,7 +20,7 @@ const corsOptions = { // options for cors
     optionsSuccessStatus: 200
 }
 
-crouter.use(express.json()); // allows express to parse json objects (middleware)
+orouter.use(express.json()); // allows express to parse json objects (middleware)
 srouter.use(express.json()); // allows express to parse json objects (middleware)
 arouter.use(express.json()); // allows express to parse json objects (middleware)
 
