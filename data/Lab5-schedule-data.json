@@ -1,0 +1,21 @@
+[
+    {
+        "classes": [
+            {
+                "subject_code": "ENGLISH",
+                "course_code": "1027F"
+            },
+            {
+                "subject_code": "ENGSCI",
+                "course_code": "1036B"
+            },
+            {
+                "subject_code": "BUSINESS",
+                "course_code": "2257"
+            }
+        ],
+        "name": "sample",
+        "visibility": "public",
+        "description": ""
+    }
+]

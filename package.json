@@ -1,0 +1,29 @@
+{
+  "name": "se3316-aduffy22-lab5",
+  "version": "1.0.0",
+  "description": "Final lab for SE3316 - Web Technologies, where we create a fully authenticated web app to create class schedules, using Angular, Node, and Express",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/a-duffy12/se3316-aduffy22-lab5.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/a-duffy12/se3316-aduffy22-lab5/issues"
+  },
+  "homepage": "https://github.com/a-duffy12/se3316-aduffy22-lab5#readme",
+  "dependencies": {
+    "angular": "^1.8.2",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "joi": "^17.2.1",
+    "mongoose": "^5.10.9",
+    "nodemon": "^2.0.6"
+  }
+}
