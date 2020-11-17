@@ -1,0 +1,18 @@
+h1 {
+  text-align: center;
+}
+
+#title {
+  margin-bottom: 50px;
+  color: #dddddd;
+  text-shadow: /* give the text an outline */
+		-1px -1px 0 #000000,
+		1px -1px 0 #000000,
+		-1px 1px 0 #000000,
+		1px 1px 0 #000000;
+}
+
+#foot-div {
+  margin-top: 100px;
+  text-align: center;
+}
