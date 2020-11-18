@@ -631,8 +631,15 @@ function sanitizeInput(input, l)
     }
 };
 
-// function for email addresses // TODO
+// function for email addresses
 function sanitizeEmail(add)
 {
-    return true;
+    if (/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(add)) // email must match this pattern
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }

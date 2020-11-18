@@ -27,4 +27,17 @@ export class Validator {
       return false;
     }
   }
+
+  // method to validate an email address
+  public validateEmail(inp: string)
+  {
+    if (/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(inp)) // email must match this pattern
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+  }
 }

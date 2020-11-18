@@ -4,6 +4,7 @@
         "email": "aduffy22@uwo.ca",
         "password": "pa$$word",
         "active": true,
+        "verified": false,
         "permission_level": "admin"
     },
     {
@@ -11,6 +12,7 @@
         "email": "12aduffy@gmail.com",
         "password": "pa$$word",
         "active": true,
+        "verified": false,
         "permission_level": "secure"
     },
     {
@@ -18,6 +20,7 @@
         "email": "94aduffy@gmail.com",
         "password": "pa$$word",
         "active": true,
+        "verified": false,
         "permission_level": "secure"
     },
     {
@@ -25,6 +28,7 @@
         "email": "phobospuzzlegame@gmail.com",
         "password": "pa$$word",
         "active": true,
+        "verified": false,
         "permission_level": "secure"
     }
 ]
