@@ -1,1 +1,30 @@
-[{"name":"Aiden","email":"aduffy22@uwo.ca","password":"pa$$word","active":true,"permission_level":"admin"},{"name":"Aiden2","email":"12aduffy@gmail.com","password":"pa$$word","active":true,"permission_level":"admin"},{"name":"Aiden3","email":"94aduffy@gmail.com","password":"pa$$word","active":true,"permission_level":"admin"},{"name":"Aiden4","email":"phobospuzzlegame@gmail.com","password":"pa$$word","active":true,"permission_level":"secure"}]
+[
+    {
+        "name": "Aiden",
+        "email": "aduffy22@uwo.ca",
+        "password": "pa$$word",
+        "active": true,
+        "permission_level": "admin"
+    },
+    {
+        "name": "Aiden2",
+        "email": "12aduffy@gmail.com",
+        "password": "pa$$word",
+        "active": true,
+        "permission_level": "secure"
+    },
+    {
+        "name": "Aiden3",
+        "email": "94aduffy@gmail.com",
+        "password": "pa$$word",
+        "active": true,
+        "permission_level": "secure"
+    },
+    {
+        "name": "Aiden4",
+        "email": "phobospuzzlegame@gmail.com",
+        "password": "pa$$word",
+        "active": true,
+        "permission_level": "secure"
+    }
+]

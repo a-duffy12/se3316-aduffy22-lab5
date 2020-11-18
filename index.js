@@ -5,7 +5,6 @@ const j1data = require("./data/Lab5-timetable-data.json"); // json data for cour
 const j2data = require("./data/Lab5-schedule-data.json"); // json data for schedules
 const j3data = require("./data/Lab5-user-data.json"); // json data for users
 const j4data = require("./data/Lab5-courses-comments-data.json"); // json data for course comments
-const { time } = require("console");
 const sfile = "./data/Lab5-schedule-data.json"; // file holding json data for scehdules
 const ufile = "./data/Lab5-user-data.json"; // file holding json data for users
 const rfile = "./data/Lab5-courses-comments-data.json"; // file holding data for course comments
@@ -41,8 +40,6 @@ orouter.get("/users/:email", (req, res) => {
     
     if (sanitizeEmail(req.params.email)) 
     {
-        let exists = false; // empty bool to inform whether account exists or not
-    
         udata = getData(j3data); // get user account data
 
         const exIndex = udata.findIndex(u => u.email === req.params.email); // find index of the exisitng user with the given email
@@ -217,6 +214,45 @@ orouter.get("/schedules/full/:schedule", (req, res) => {
     else
     {
         res.status(400).send("Invalid input!");    
+    }
+});
+
+// display review for a given course
+orouter.get("/comments/:subject/:course/:email", (req, res) => {
+
+    if (sanitizeInput(req.params.subject, 8) && sanitizeInput(req.params.course, 5) && sanitizeEmail(req.params.email))
+    {
+        rdata = getData(j4data); // get up to date comment data
+
+        const exIndex = rdata.findIndex(r => (r.subject_code === req.params.subject) && (r.course_code === req.params.course) && (r.author === req.params.email))
+
+        if (exIndex >= 0) // this exact comment already exists
+        {
+            if (rdata[exIndex].hidden) // comment is hidden
+            {
+                res.status(400).send(`Comment for ${req.params.subject}: ${req.params.course} by ${req.params.email} is hidden!`);
+            }
+            else if (!rdata[exIndex].hidden) // comment is not hidden
+            {
+                res.send(rdata[exIndex]); // send corresponding review
+            }
+        }
+        else if (exIndex < 0) // if this exact comment does not already exist
+        {
+            res.status(400).send(`Comment for ${req.params.subject}: ${req.params.course} by ${req.params.email} does not exist!`);
+        }
+    }
+    else if (sanitizeInput(req.params.subject, 8) && sanitizeInput(req.params.course, 5))
+    {
+        res.status(400).send("Invalid email address!");
+    }
+    else if (sanitizeEmail(req.params.email))
+    {
+        res.status(400).send("Invalid course!");
+    }
+    else
+    {
+        res.status(400).send("Invalid input!");
     }
 });
 
@@ -439,7 +475,7 @@ arouter.put("/users", (req, res) => {
             }
         }
         
-        res.send("Update permission levels of given users to 'admin'");
+        res.send("Updated permission levels of given users to 'admin'");
         setData(udata, ufile); // update array of users in JSON file
     }  
     else
@@ -448,18 +484,86 @@ arouter.put("/users", (req, res) => {
     }
 })
 
+
 // hide and un-hide course reviews PUT 5c
 arouter.put("/comments/:subject/:course/:email", (req, res) => {
-    // TODO
-    // find comment in question
-    // set hidden to bool value in request body
+    
+    if (sanitizeInput(req.params.subject, 8) && sanitizeInput(req.params.course, 5) && sanitizeEmail(req.params.email))
+    {
+        rdata = getData(j4data); // get up to date comment data
+
+        const exIndex = rdata.findIndex(r => (r.subject_code === req.params.subject) && (r.course_code === req.params.course) && (r.author === req.params.email))
+
+        if (exIndex >= 0) // this exact comment already exists
+        {
+            if (rdata[exIndex].hidden)
+            {
+                rdata[exIndex].hidden = false; // set comment to be un-hidden
+                res.send(`Comment for ${req.params.subject}: ${req.params.course} by ${req.params.email} has been un-hidden`);
+            }
+            else if (!rdata[exIndex].hidden)
+            {
+                rdata[exIndex].hidden = true; // set comment to be hidden
+                res.send(`Comment for ${req.params.subject}: ${req.params.course} by ${req.params.email} has been hidden`);
+            }
+            
+            setData(rdata, rfile); // update comments array and send to JSON file
+        }
+        else if (exIndex < 0) // if this exact comment does not already exist
+        {
+            res.status(400).send(`Comment for ${req.params.subject}: ${req.params.course} by ${req.params.email} does not exist!`);
+        }
+
+        setData(rdata, rfile); // send updated comments array to JSON file
+    }
+    else if (sanitizeInput(req.params.subject, 8) && sanitizeInput(req.params.course, 5))
+    {
+        res.status(400).send("Invalid email address!");
+    }
+    else if (sanitizeEmail(req.params.email))
+    {
+        res.status(400).send("Invalid course!");
+    }
+    else
+    {
+        res.status(400).send("Invalid input!");
+    }
 })
 
 // activate and deactivate a given user PUT 5d
 arouter.put("/users/:email", (req, res) => {
-    // TODO
-    // find user in question
-    // set active to bool value in request body
+
+    if (sanitizeEmail(req.params.email)) 
+    {
+        udata = getData(j3data); // get user account data
+
+        const exIndex = udata.findIndex(u => u.email === req.params.email); // find index of the exisitng user with the given email
+    
+        if (exIndex >= 0) // if the user exists
+        {
+            if (udata[exIndex].active) // if the user is currently active
+            {
+                udata[exIndex].active = false; // deactive user
+                res.status(200).send(`User with email: ${req.params.email} has been deactivated`);
+            }
+            else if (!udata[exIndex].active) // if the user is currently deactivated
+            {
+                udata[exIndex].active = true; // activate user
+                res.status(200).send(`User with email: ${req.params.email} has been activated`);
+            }
+        }
+        else if (exIndex < 0) // if the user does not exist
+        {
+            res.status(400).send(`User with email: ${req.params.email} does not exist`);
+        }
+
+        setData(udata, ufile); // update user data array in JSON file
+    }  
+    else
+    {
+        res.status(400).send("Invalid input!");
+    }
+
 })
 
 
@@ -493,10 +597,10 @@ app.use("/api/admin", arouter); // install router object path for admin routes
 const port = process.env.PORT || 3000;
 app.listen(port, () => {console.log(`Listeneing on port ${port}`)}); // choose which port to listen on
 
-// function to read from JSON file before each usage of the sdata array
-function getData(file)
+// function to read from referenced JSON file before each usage of the sdata array
+function getData(fileRef)
 {
-    return JSON.parse(JSON.stringify(file)); // parse json object holding the schedules;
+    return JSON.parse(JSON.stringify(fileRef)); // parse json object holding the schedules;
 };
 
 // function to write to JSON file after each update to sdata array
@@ -527,7 +631,7 @@ function sanitizeInput(input, l)
     }
 };
 
-// function for email addresses
+// function for email addresses // TODO
 function sanitizeEmail(add)
 {
     return true;
