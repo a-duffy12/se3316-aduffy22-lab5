@@ -35,6 +35,7 @@ export class LoginComponent implements OnInit {
 
     // query back end to see if user needs to be registered or not
     this.register();
+    // check if user is active, if not, prevent login
   }
 
   // method to login via Auth0
@@ -44,6 +45,7 @@ export class LoginComponent implements OnInit {
 
     // query back end to see if user needs to be registered or not
     this.register();
+    // check if user is active, if not, prevent login
   }
 
   // method to logout via Auth0

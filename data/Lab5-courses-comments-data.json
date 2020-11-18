@@ -5,5 +5,12 @@
         "author": "aduffy22@uwo.ca",
         "comment": "Highly recommend getting a location spoofer for attendance",
         "hidden": false
+    },
+    {
+        "comment": "new test comment for materials",
+        "hidden": false,
+        "subject_code": "ENGSCI",
+        "course_code": "1021A",
+        "author": "aduffy22@uwo.ca"
     }
 ]
