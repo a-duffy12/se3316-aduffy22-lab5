@@ -1,10 +1,13 @@
 const express = require("express"); // get express 
 const fs = require("fs"); // get fs module
 const cors = require("cors"); // get cors module
+
 const j1data = require("./data/Lab5-timetable-data.json"); // json data for courses
 const j2data = require("./data/Lab5-schedule-data.json"); // json data for schedules
 const j3data = require("./data/Lab5-user-data.json"); // json data for users
 const j4data = require("./data/Lab5-courses-comments-data.json"); // json data for course comments
+
+const cdata = JSON.parse(JSON.stringify(j1data)); // parse json object holding the courses
 const sfile = "./data/Lab5-schedule-data.json"; // file holding json data for scehdules
 const ufile = "./data/Lab5-user-data.json"; // file holding json data for users
 const rfile = "./data/Lab5-courses-comments-data.json"; // file holding data for course comments
@@ -13,7 +16,7 @@ const app = express(); // create app constant
 const orouter = express.Router(); // create router object for open routes
 const srouter = express.Router(); // create router object for secure routes
 const arouter = express.Router(); // create router object for admin routes
-const cdata = JSON.parse(JSON.stringify(j1data)); // parse json object holding the courses
+
 
 const corsOptions = { // options for cors
     origin: "http://localhost:4200",
@@ -32,6 +35,7 @@ app.use((req, res, next) => { // middleware function to do console logs
     console.log(`${req.method} request for ${req.url}`); // print to console
     next(); // continue processeing
 });
+
 
 // OPEN ROUTES ----------------------------------
 
@@ -57,27 +61,493 @@ orouter.get("/users/:email", (req, res) => {
     {
         res.status(400).send("Invalid input!");
     }
-});/*
+})
 
 // create an account POST
-orouter.post("/:email", (req, res) => {
-    // TODO
-    // send user object to file
+orouter.post("/users/:email", (req, res) => {
+
+    if (sanitizeEmail(req.params.email) && sanitizeInput(req.body)) 
+    {
+        udata = getData(j3data); // get user account data
+
+        const exIndex = udata.findIndex(u => u.email === req.params.email); // find index of the exisitng user with the given email
+    
+        if (exIndex >= 0) // if the user exists
+        {
+            res.status(400).send(`User with email: ${req.params.email} already exists!`);
+        }
+        else if (exIndex < 0) // if the user does not exist
+        {
+            let newUser = req.body; // empty object for a new user
+            newUser.email = req.params.email; // set email field for new user
+            udata.push(newUser); // add new user to array of users
+            res.send(`Created user account with email: ${req.params.email}`);
+        }
+
+        setData(udata, ufile); // send updated user data array to JSON file
+    }  
+    else
+    {
+        res.status(400).send("Invalid input!");
+    }
 });
 
-// search for courses based on subject, course number, catalog number, or both GET 3b
+// expanded search results for the above GET 3b/3c (differentiated on front end)
 orouter.get("/courses/:subject?/:courseNum?/:catalog?", (req, res) => {
-    // TODO
-    // based on what is included, search cdata array for matches
-    // return subject, catalog_nbr, className, class_section, ssr_component, and timetable for all results
-});
 
-// expanded search results for the above GET 3c
-orouter.get("/courses/full/:subject?/:courseNum?/:catalog?", (req, res) => {
-    uter.get("/courses/:subject?/:courseNum?/:catalog?", (req, res) => {
-    // TODO
-    // based on what is included, search cdata array for matches
     // return all information for each result
+
+    if (!req.query.subject && !req.query.courseNum && !req.query.catalog) // none
+    {
+        let courses = []; // empty array to hold all courses
+
+        for (c in cdata)
+        {
+            let obj = {};
+            obj.course_code = cdata[c].catalog_nbr;
+            obj.subject_code = cdata[c].subject;
+            obj.class_name = cdata[c].className;
+
+            for (i in cdata[c].course_info)
+            {
+                obj.class_section = cdata[c].course_info[i].class_section;
+                obj.component = cdata[c].course_info[i].ssr_component;
+                obj.class_number = cdata[c].course_info[i].class_nbr;
+                obj.enrollment = cdata[c].course_info[i].enrl_stat;
+                obj.description = cdata[c].course_info[i].descr;
+                obj.long_description = cdata[c].course_info[i].descrlong;
+                obj.campus = cdata[c].course_info[i].campus;
+                obj.classroom = cdata[c].course_info[i].facility_ID;
+                obj.profs = cdata[c].course_info[i].instructors;
+                obj.times = []; // empty array for days the class runs
+
+                for (d in cdata[c].course_info[i].days)
+                {
+                    let obj2 = {};
+                    obj2.day = cdata[c].course_info[i].days[d];
+                    obj2.start = cdata[c].course_info[i].start_time;
+                    obj2.end = cdata[c].course_info[i].end_time;
+                    obj.times.push(obj2); // add days data object to course
+                }
+            }
+            
+            obj.content = cdata[c].catalog_description;
+
+            courses.push(obj); // add course data object to array of courses
+        }
+        
+        res.send(courses);
+    }
+    else if (req.query.subject && !req.query.courseNum && !req.query.catalog) // only subject
+    {
+        if (sanitizeInput(req.query.subject, 8))
+        {
+            let courses = []; // empty array to hold all courses
+
+            for (c in cdata)
+            {
+                if (req.query.subject === cdata[c].subject)
+                {
+                    let obj = {};
+                    obj.course_code = cdata[c].catalog_nbr;
+                    obj.subject_code = cdata[c].subject;
+                    obj.class_name = cdata[c].className;
+
+                    for (i in cdata[c].course_info)
+                    {
+                        obj.class_section = cdata[c].course_info[i].class_section;
+                        obj.component = cdata[c].course_info[i].ssr_component;
+                        obj.class_number = cdata[c].course_info[i].class_nbr;
+                        obj.enrollment = cdata[c].course_info[i].enrl_stat;
+                        obj.description = cdata[c].course_info[i].descr;
+                        obj.long_description = cdata[c].course_info[i].descrlong;
+                        obj.campus = cdata[c].course_info[i].campus;
+                        obj.classroom = cdata[c].course_info[i].facility_ID;
+                        obj.profs = cdata[c].course_info[i].instructors;
+                        obj.times = []; // empty array for days the class runs
+
+                        for (d in cdata[c].course_info[i].days)
+                        {
+                            let obj2 = {};
+                            obj2.day = cdata[c].course_info[i].days[d];
+                            obj2.start = cdata[c].course_info[i].start_time;
+                            obj2.end = cdata[c].course_info[i].end_time;
+                            obj.times.push(obj2); // add days data object to course
+                        }
+                    }
+                    
+                    obj.content = cdata[c].catalog_description;
+
+                    courses.push(obj); // add course data object to array of courses
+                }
+            }
+            
+            if (courses.length > 0)
+            {
+                res.send(courses);
+            }
+            else 
+            {
+                res.send(`No courses found with subject: ${req.query.subject}`);
+            }
+        }
+        else
+        {
+            res.status(400).send("Invalid input!");
+        }
+    }
+    else if (!req.query.subject && req.query.courseNum && !req.query.catalog) // only course number
+    {
+        if (sanitizeInput(req.query.courseNum, 4))
+        {
+            let courses = []; // empty array to hold all courses
+
+            for (c in cdata)
+            {
+                if (req.query.courseNum === String(cdata[c].catalog_nbr).substring(0, 4))
+                {
+                    let obj = {};
+                    obj.course_code = cdata[c].catalog_nbr;
+                    obj.subject_code = cdata[c].subject;
+                    obj.class_name = cdata[c].className;
+
+                    for (i in cdata[c].course_info)
+                    {
+                        obj.class_section = cdata[c].course_info[i].class_section;
+                        obj.component = cdata[c].course_info[i].ssr_component;
+                        obj.class_number = cdata[c].course_info[i].class_nbr;
+                        obj.enrollment = cdata[c].course_info[i].enrl_stat;
+                        obj.description = cdata[c].course_info[i].descr;
+                        obj.long_description = cdata[c].course_info[i].descrlong;
+                        obj.campus = cdata[c].course_info[i].campus;
+                        obj.classroom = cdata[c].course_info[i].facility_ID;
+                        obj.profs = cdata[c].course_info[i].instructors;
+                        obj.times = []; // empty array for days the class runs
+
+                        for (d in cdata[c].course_info[i].days)
+                        {
+                            let obj2 = {};
+                            obj2.day = cdata[c].course_info[i].days[d];
+                            obj2.start = cdata[c].course_info[i].start_time;
+                            obj2.end = cdata[c].course_info[i].end_time;
+                            obj.times.push(obj2); // add days data object to course
+                        }
+                    }
+                    
+                    obj.content = cdata[c].catalog_description;
+
+                    courses.push(obj); // add course data object to array of courses
+                }
+            }
+            
+            if (courses.length > 0)
+            {
+                res.send(courses);
+            }
+            else 
+            {
+                res.send(`No courses found with course number: ${req.query.courseNum}`);
+            }
+        }
+        else
+        {
+            res.status(400).send("Invalid input!");
+        }
+    }
+    else if (!req.query.subject && !req.query.courseNum && req.query.catalog) // only catalog number
+    {
+        if (sanitizeInput(req.query.catalog, 5))
+        {
+            let courses = []; // empty array to hold all courses
+
+            for (c in cdata)
+            {
+                if (req.query.catalog === cdata[c].catalog_nbr)
+                {
+                    let obj = {};
+                    obj.course_code = cdata[c].catalog_nbr;
+                    obj.subject_code = cdata[c].subject;
+                    obj.class_name = cdata[c].className;
+
+                    for (i in cdata[c].course_info)
+                    {
+                        obj.class_section = cdata[c].course_info[i].class_section;
+                        obj.component = cdata[c].course_info[i].ssr_component;
+                        obj.class_number = cdata[c].course_info[i].class_nbr;
+                        obj.enrollment = cdata[c].course_info[i].enrl_stat;
+                        obj.description = cdata[c].course_info[i].descr;
+                        obj.long_description = cdata[c].course_info[i].descrlong;
+                        obj.campus = cdata[c].course_info[i].campus;
+                        obj.classroom = cdata[c].course_info[i].facility_ID;
+                        obj.profs = cdata[c].course_info[i].instructors;
+                        obj.times = []; // empty array for days the class runs
+
+                        for (d in cdata[c].course_info[i].days)
+                        {
+                            let obj2 = {};
+                            obj2.day = cdata[c].course_info[i].days[d];
+                            obj2.start = cdata[c].course_info[i].start_time;
+                            obj2.end = cdata[c].course_info[i].end_time;
+                            obj.times.push(obj2); // add days data object to course
+                        }
+                    }
+                    
+                    obj.content = cdata[c].catalog_description;
+
+                    courses.push(obj); // add course data object to array of courses
+                }
+            }
+            
+            if (courses.length > 0)
+            {
+                res.send(courses);
+            }
+            else 
+            {
+                res.send(`No courses found with course code: ${req.query.catalog}`);
+            }
+        }
+        else
+        {
+            res.status(400).send("Invalid input!");
+        }
+    }
+    else if (req.query.subject && req.query.courseNum && !req.query.catalog) // subject and course number
+    {
+        if (sanitizeInput(req.query.subject, 8) && sanitizeInput(req.query.courseNum, 4))
+        {
+            let courses = []; // empty array to hold all courses
+
+            for (c in cdata)
+            {
+                if (req.query.subject === cdata[c].subject && req.query.courseNum === String(cdata[c].catalog_nbr).substring(0, 4))
+                {
+                    let obj = {};
+                    obj.course_code = cdata[c].catalog_nbr;
+                    obj.subject_code = cdata[c].subject;
+                    obj.class_name = cdata[c].className;
+
+                    for (i in cdata[c].course_info)
+                    {
+                        obj.class_section = cdata[c].course_info[i].class_section;
+                        obj.component = cdata[c].course_info[i].ssr_component;
+                        obj.class_number = cdata[c].course_info[i].class_nbr;
+                        obj.enrollment = cdata[c].course_info[i].enrl_stat;
+                        obj.description = cdata[c].course_info[i].descr;
+                        obj.long_description = cdata[c].course_info[i].descrlong;
+                        obj.campus = cdata[c].course_info[i].campus;
+                        obj.classroom = cdata[c].course_info[i].facility_ID;
+                        obj.profs = cdata[c].course_info[i].instructors;
+                        obj.times = []; // empty array for days the class runs
+
+                        for (d in cdata[c].course_info[i].days)
+                        {
+                            let obj2 = {};
+                            obj2.day = cdata[c].course_info[i].days[d];
+                            obj2.start = cdata[c].course_info[i].start_time;
+                            obj2.end = cdata[c].course_info[i].end_time;
+                            obj.times.push(obj2); // add days data object to course
+                        }
+                    }
+                    
+                    obj.content = cdata[c].catalog_description;
+
+                    courses.push(obj); // add course data object to array of courses
+                }
+            }
+            
+            if (courses.length > 0)
+            {
+                res.send(courses);
+            }
+            else 
+            {
+                res.send(`No courses found with subject: ${req.query.subject} and course number: ${req.query.courseNum}`);
+            }
+        }
+        else
+        {
+            res.status(400).send("Invalid input!");
+        }
+    }
+    else if (req.query.subject && !req.query.courseNum && req.query.catalog) // subject and catalog number
+    {
+        if (sanitizeInput(req.query.subject, 8) && sanitizeInput(req.query.catalog, 5))
+        {
+            let courses = []; // empty array to hold all courses
+
+            for (c in cdata)
+            {
+                if (req.query.subject === cdata[c].subject && req.query.catalog === cdata[c].catalog_nbr)
+                {
+                    let obj = {};
+                    obj.course_code = cdata[c].catalog_nbr;
+                    obj.subject_code = cdata[c].subject;
+                    obj.class_name = cdata[c].className;
+
+                    for (i in cdata[c].course_info)
+                    {
+                        obj.class_section = cdata[c].course_info[i].class_section;
+                        obj.component = cdata[c].course_info[i].ssr_component;
+                        obj.class_number = cdata[c].course_info[i].class_nbr;
+                        obj.enrollment = cdata[c].course_info[i].enrl_stat;
+                        obj.description = cdata[c].course_info[i].descr;
+                        obj.long_description = cdata[c].course_info[i].descrlong;
+                        obj.campus = cdata[c].course_info[i].campus;
+                        obj.classroom = cdata[c].course_info[i].facility_ID;
+                        obj.profs = cdata[c].course_info[i].instructors;
+                        obj.times = []; // empty array for days the class runs
+
+                        for (d in cdata[c].course_info[i].days)
+                        {
+                            let obj2 = {};
+                            obj2.day = cdata[c].course_info[i].days[d];
+                            obj2.start = cdata[c].course_info[i].start_time;
+                            obj2.end = cdata[c].course_info[i].end_time;
+                            obj.times.push(obj2); // add days data object to course
+                        }
+                    }
+                    
+                    obj.content = cdata[c].catalog_description;
+
+                    courses.push(obj); // add course data object to array of courses
+                }
+            }
+            
+            if (courses.length > 0)
+            {
+                res.send(courses);
+            }
+            else 
+            {
+                res.send(`No courses found with subject: ${req.query.subject} and course code: ${req.query.catalog}`);
+            }
+        }
+        else
+        {
+            res.status(400).send("Invalid input!");
+        }
+    }
+    else if (!req.query.subject && req.query.courseNum && req.query.catalog) // course number and catalog number
+    {
+        if (sanitizeInput(req.query.courseNum, 4) && sanitizeInput(req.query.catalog, 5))
+        {
+            let courses = []; // empty array to hold all courses
+
+            for (c in cdata)
+            {
+                if (req.query.courseNum === String(cdata[c].catalog_nbr).substring(0,4) && req.query.catalog === cdata[c].catalog_nbr)
+                {
+                    let obj = {};
+                    obj.course_code = cdata[c].catalog_nbr;
+                    obj.subject_code = cdata[c].subject;
+                    obj.class_name = cdata[c].className;
+
+                    for (i in cdata[c].course_info)
+                    {
+                        obj.class_section = cdata[c].course_info[i].class_section;
+                        obj.component = cdata[c].course_info[i].ssr_component;
+                        obj.class_number = cdata[c].course_info[i].class_nbr;
+                        obj.enrollment = cdata[c].course_info[i].enrl_stat;
+                        obj.description = cdata[c].course_info[i].descr;
+                        obj.long_description = cdata[c].course_info[i].descrlong;
+                        obj.campus = cdata[c].course_info[i].campus;
+                        obj.classroom = cdata[c].course_info[i].facility_ID;
+                        obj.profs = cdata[c].course_info[i].instructors;
+                        obj.times = []; // empty array for days the class runs
+
+                        for (d in cdata[c].course_info[i].days)
+                        {
+                            let obj2 = {};
+                            obj2.day = cdata[c].course_info[i].days[d];
+                            obj2.start = cdata[c].course_info[i].start_time;
+                            obj2.end = cdata[c].course_info[i].end_time;
+                            obj.times.push(obj2); // add days data object to course
+                        }
+                    }
+                    
+                    obj.content = cdata[c].catalog_description;
+
+                    courses.push(obj); // add course data object to array of courses
+                }
+            }
+            
+            if (courses.length > 0)
+            {
+                res.send(courses);
+            }
+            else 
+            {
+                res.send(`No courses found with course number: ${req.query.courseNum} and course code: ${req.query.catalog}`);
+            }
+        }
+        else
+        {
+            res.status(400).send("Invalid input!");
+        }
+    }
+    else if (req.query.subject && req.query.courseNum && req.query.catalog) // all three
+    {
+        if (sanitizeInput(req.query.subject, 8) && sanitizeInput(req.query.courseNum, 4) && sanitizeInput(req.query.catalog, 5))
+        {
+            let courses = []; // empty array to hold all courses
+
+            for (c in cdata)
+            {
+                if (req.query.subject === cdata[c].subject && req.query.courseNum === String(cdata[c].catalog_nbr).substring(0,4) && req.query.catalog === cdata[c].catalog_nbr)
+                {
+                    let obj = {};
+                    obj.course_code = cdata[c].catalog_nbr;
+                    obj.subject_code = cdata[c].subject;
+                    obj.class_name = cdata[c].className;
+
+                    for (i in cdata[c].course_info)
+                    {
+                        obj.class_section = cdata[c].course_info[i].class_section;
+                        obj.component = cdata[c].course_info[i].ssr_component;
+                        obj.class_number = cdata[c].course_info[i].class_nbr;
+                        obj.enrollment = cdata[c].course_info[i].enrl_stat;
+                        obj.description = cdata[c].course_info[i].descr;
+                        obj.long_description = cdata[c].course_info[i].descrlong;
+                        obj.campus = cdata[c].course_info[i].campus;
+                        obj.classroom = cdata[c].course_info[i].facility_ID;
+                        obj.profs = cdata[c].course_info[i].instructors;
+                        obj.times = []; // empty array for days the class runs
+
+                        for (d in cdata[c].course_info[i].days)
+                        {
+                            let obj2 = {};
+                            obj2.day = cdata[c].course_info[i].days[d];
+                            obj2.start = cdata[c].course_info[i].start_time;
+                            obj2.end = cdata[c].course_info[i].end_time;
+                            obj.times.push(obj2); // add days data object to course
+                        }
+                    }
+                    
+                    obj.content = cdata[c].catalog_description;
+
+                    courses.push(obj); // add course data object to array of courses
+                }
+            }
+            
+            if (courses.length > 0)
+            {
+                res.send(courses);
+            }
+            else 
+            {
+                res.send(`No courses found with subject: ${req.query.subject}, course number: ${req.query.courseNum} and course code: ${req.query.catalog}`);
+            }
+        }
+        else
+        {
+            res.status(400).send("Invalid input!");
+        }
+    }
+    else
+    {
+        res.status(404).send("Invalid input!");
+    }
 });
 
 // search based on a keyword of 5+ chars GET 3d/3e
@@ -85,7 +555,7 @@ orouter.get("/courses/key/:keyword", (req, res) => {
     // TODO
     // match for catalog_nbg and/or className using substring and/or soft-matched
     // return all information for each result (?)
-}); */
+}); 
 
 // display all public schedules GET 3f
 orouter.get("/schedules", (req, res) => {
@@ -255,6 +725,7 @@ orouter.get("/comments/:subject/:course/:email", (req, res) => {
         res.status(400).send("Invalid input!");
     }
 });
+
 
 // SECURE ROUTES --------------------------------
 
@@ -451,6 +922,49 @@ srouter.post("/comments/:subject/:course/:email", (req, res) => {
         res.status(400).send("Invalid input!");
     }
 });
+
+// change account password PUT
+srouter.put("/users/:email", (req, res) => {
+    
+    // send user object to file
+    if (sanitizeEmail(req.params.email) && sanitizeInput(req.body)) 
+    {
+        udata = getData(j3data); // get user account data
+
+        const exIndex = udata.findIndex(u => u.email === req.params.email); // find index of the exisitng user with the given email
+    
+        if (exIndex >= 0) // if the user exists
+        {
+            if (udata[exIndex].password === req.body.old_password)
+            {
+                if (udata[exIndex].password === req.body.password)
+                {
+                    res.status(400).send(`Cannot change password to your existing password for user with email: ${req.params.email}!`);
+                }
+                else
+                {
+                    udata[exIndex].password = req.body.password; // set password to the new password
+                    res.send(`Updated password for user with email: ${req.params.email}`);
+                }
+            }
+            else
+            {
+                res.status(400).send(`Incorrect password for user with email: ${req.params.email}!`);
+            }
+        }
+        else if (exIndex < 0) // if the user does not exist
+        {
+            res.status(400).send(`User with email: ${req.params.email} does not exist!`);
+        }
+
+        setData(udata, ufile); // send updated user data array to JSON file
+    }  
+    else
+    {
+        res.status(400).send("Invalid input!");
+    }
+});
+
 
 // ADMIN ROUTES --------------------------------
 
