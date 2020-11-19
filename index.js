@@ -1,6 +1,7 @@
 const express = require("express"); // get express 
 const fs = require("fs"); // get fs module
 const cors = require("cors"); // get cors module
+const stringSimilarity = require("string-similarity"); // get string similarity module
 
 const j1data = require("./data/Lab5-timetable-data.json"); // json data for courses
 const j2data = require("./data/Lab5-schedule-data.json"); // json data for schedules
@@ -551,10 +552,66 @@ orouter.get("/courses/:subject?/:courseNum?/:catalog?", (req, res) => {
 });
 
 // search based on a keyword of 5+ chars GET 3d/3e
-orouter.get("/courses/key/:keyword", (req, res) => {
-    // TODO
+orouter.get("/key/:keyword", (req, res) => {
+ 
     // match for catalog_nbg and/or className using substring and/or soft-matched
-    // return all information for each result (?)
+
+    if (sanitizeInput(req.params.keyword, 100) && req.params.keyword.length >= 5)
+    {
+        let courses = []; // empty array to hold all courses
+        const key = new RegExp(req.params.keyword, 'g');
+
+        for (c in cdata)
+        {
+            if (String(cdata[c].catalog_nbr).match(key) || String(cdata[c].className).match(key) || stringSimilarity.compareTwoStrings(req.params.keyword, String(cdata[c].catalog_nbr)) > 0.8 || stringSimilarity.compareTwoStrings(req.params.keyword, String(cdata[c].className)) > 0.8)
+            {
+                let obj = {};
+                obj.course_code = cdata[c].catalog_nbr;
+                obj.subject_code = cdata[c].subject;
+                obj.class_name = cdata[c].className;
+
+                for (i in cdata[c].course_info)
+                {
+                    obj.class_section = cdata[c].course_info[i].class_section;
+                    obj.component = cdata[c].course_info[i].ssr_component;
+                    obj.class_number = cdata[c].course_info[i].class_nbr;
+                    obj.enrollment = cdata[c].course_info[i].enrl_stat;
+                    obj.description = cdata[c].course_info[i].descr;
+                    obj.long_description = cdata[c].course_info[i].descrlong;
+                    obj.campus = cdata[c].course_info[i].campus;
+                    obj.classroom = cdata[c].course_info[i].facility_ID;
+                    obj.profs = cdata[c].course_info[i].instructors;
+                    obj.times = []; // empty array for days the class runs
+
+                    for (d in cdata[c].course_info[i].days)
+                    {
+                        let obj2 = {};
+                        obj2.day = cdata[c].course_info[i].days[d];
+                        obj2.start = cdata[c].course_info[i].start_time;
+                        obj2.end = cdata[c].course_info[i].end_time;
+                        obj.times.push(obj2); // add days data object to course
+                    }
+                }
+                
+                obj.content = cdata[c].catalog_description;
+
+                courses.push(obj); // add course data object to array of courses
+            }
+        }
+        
+        if (courses.length > 0)
+        {
+            res.send(courses);
+        }
+        else 
+        {
+            res.send(`No courses found matching keyword: ${req.params.keyword}`);
+        }
+    }
+    else
+    {
+        res.status(400).send("Invalid input!");
+    }    
 }); 
 
 // display all public schedules GET 3f
@@ -637,7 +694,7 @@ orouter.get("/schedules/full/:schedule", (req, res) => {
 
         const exIndex = sdata.findIndex(s => s.name === req.params.schedule); // find index of existing schedule of same name
 
-        if (exIndex >= 0) // if the schedule exists
+        if ((exIndex >= 0) && (sdata[exIndex].visibility == "public")) // if the schedule exists and is public
         {
             let timetables = []; // empty array for timetable data
 
@@ -676,9 +733,9 @@ orouter.get("/schedules/full/:schedule", (req, res) => {
 
             res.send(timetables); // return the time table
         }
-        else if (exIndex < 0) // if the schedule doesn't exist
+        else // if the schedule doesn't exist or is not public
         {
-            res.status(404).send(`No schedule found with name: ${req.params.schedule}`);
+            res.status(404).send(`No public schedule found with name: ${req.params.schedule}`);
         }
     }
     else
@@ -730,8 +787,9 @@ orouter.get("/comments/:subject/:course/:email", (req, res) => {
 // SECURE ROUTES --------------------------------
 
 // create a new schedule POST 4a
-// update an existing schedule PUT 4b
-// delete an exisitng schedule DELETE 4c
+// update an existing schedule PUT 4c
+// delete an exisitng schedule DELETE 4d
+// get the timetable for the schedule GET 4b
 srouter.route("/schedules/:schedule") // all routers that access a particular schedule
     .post((req, res) => {
 
@@ -882,6 +940,94 @@ srouter.route("/schedules/:schedule") // all routers that access a particular sc
             res.status(400).send("Invalid input!");
         }
     })
+    .get((req, res) => {
+        if (sanitizeInput(req.params.schedule, 100))
+        {
+            sdata = getData(j2data); // get up to date schedule data
+
+            const exIndex = sdata.findIndex(s => s.name === req.params.schedule); // find index of existing schedule of same name
+
+            if ((exIndex >= 0) && (req.body.creator == sdata[exIndex].creator)) // if the schedule exists and the current user is its creator
+            {
+                let timetables = []; // empty array for timetable data
+
+                for (p in sdata[exIndex].classes) // iterate through each subject+course pair in the schedule
+                {
+                    let sub = sdata[exIndex].classes[p].subject_code;
+                    let cor = sdata[exIndex].classes[p].course_code;
+
+                    for (c in cdata) // iterate through all classes looking for a match
+                    {
+                        if ((cdata[c].subject == sub) && (cdata[c].catalog_nbr == cor))
+                        {
+                            for (t in cdata[c].course_info) // iterate through all class sections
+                            {
+                                let obj = {}; // create empty object
+                                obj.subject_code = sub;
+                                obj.course_code = cor;
+                                obj.number = cdata[c].course_info[t].class_nbr; // add class number
+                                obj.component = cdata[c].course_info[t].ssr_component; // add component type
+                                obj.times = []; // empty array for class times
+
+                                for (d in cdata[c].course_info[t].days) // build timetable by day
+                                {
+                                    let obj2 = {}; // empty day object
+                                    obj2.day = cdata[c].course_info[t].days[d]; // add day
+                                    obj2.start = cdata[c].course_info[t].start_time; // add start time
+                                    obj2.end = cdata[c].course_info[t].end_time; // add end time
+                                    obj.times.push(obj2); // add object to nested array
+                                }
+
+                                timetables.push(obj); // add timetable object to array
+                            }
+                        }
+                    }
+                }
+
+                res.send(timetables); // return the time table
+            }
+            else // if the schedule doesn't exist
+            {
+                res.status(404).send(`No schedule made by you found with name: ${req.params.schedule}`);
+            }
+        }
+        else
+        {
+            res.status(400).send("Invalid input!");    
+        }
+    })
+
+// get all schedules for a certain user
+srouter.get("/schedules", (req, res) => {
+
+    if (sanitizeInput(req.body))
+    {
+        sdata = getData(j2data); // get up to date schedule data
+
+        let schedules = []; // empty array to house returned schedules
+        
+        for (s in sdata)
+        {
+            if (req.body.creator === sdata[s].creator)
+            {
+                schedules.push(sdata[s]); // add schedule to array
+            }
+        }
+
+        if (schedules.length > 0)
+        {
+            res.send(schedules); // return schedules by the given user
+        }
+        else
+        {
+            res.status(404).send(`No schedules found with creator: ${req.body.creator}`);
+        }
+    }
+    else
+    {
+        res.status(400).send("Invalid input!");
+    }
+});
 
 // add a review for a specific course POST 4e
 srouter.post("/comments/:subject/:course/:email", (req, res) => {
@@ -997,7 +1143,6 @@ arouter.put("/users", (req, res) => {
         res.status(400).send("Invalid input in request body!");
     }
 })
-
 
 // hide and un-hide course reviews PUT 5c
 arouter.put("/comments/:subject/:course/:email", (req, res) => {
