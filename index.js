@@ -51,7 +51,7 @@ orouter.get("/users/:email", (req, res) => {
     
         if (exIndex >= 0) // if the user exists
         {
-            res.status(200).send(`User with email: ${req.params.email} exists`);
+            res.send(udata[exIndex]);
         }
         else if (exIndex < 0) // if the user does not exist
         {

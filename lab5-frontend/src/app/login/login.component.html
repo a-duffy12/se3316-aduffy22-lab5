@@ -5,21 +5,18 @@
 </div>
 
 <div *ngIf="!(auth.isAuthenticated$ | async) && !loggedIn">
-  <p>Log in or sign up with either method below</p>
+  <p>Log in or sign up locally</p>
+  <input type="text" placeholder="Email" [(ngModel)]="userEmail">
+  <input type="text" placeholder="Password" [(ngModel)]="userPassword">
   <button (click)="login()">Login Locally</button>
+  <p>Log in or sign up via third party authentication</p>
   <button (click)="loginA()">Login with Auth0</button>
 </div>
 
-<div *ngIf="buildLogin">
-  <input type="text" placeholder="Email" [(ngModel)]="userEmail">
-  <input type="text" placeholder="Password" [(ngModel)]="userPassword">
-  <input type="text" placeholder="Password" [(ngModel)]="userPassword">
-</div>
-
-<!---
 <ul *ngIf="auth.user$ | async as user">
-  <li>{{ user.name }}</li>
-  <li>{{ user.email }}</li>
-  <button (click)="viewUser()">View User Details</button>
+  <button (click)="register()">Register vis Auth0</button>
 </ul>
------>
+
+<div *ngIf="error">
+  <h5>{{error}}</h5>
+</div>
