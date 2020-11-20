@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthService } from '@auth0/auth0-angular';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Validator } from '../validator.service';
+import { interval, Observable, Subscription } from 'rxjs';
 
 @Component({
   selector: 'secure',
@@ -8,9 +10,20 @@ import { AuthService } from '@auth0/auth0-angular';
 })
 export class SecureComponent implements OnInit {
 
-  constructor(public auth: AuthService) { }
+  // fields to track whether a user is logged in or not
+  subscription: Subscription;
+  activeUser: string = "";
+
+  constructor(private http: HttpClient, private val: Validator)
+  {
+    // every second, update the active user variable
+    this.subscription = interval(1000).subscribe(() => {
+      this.activeUser = this.val.getActiveUser();
+    });
+  }
 
   ngOnInit(): void {
   }
+
 
 }

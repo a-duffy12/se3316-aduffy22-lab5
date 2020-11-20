@@ -3,7 +3,6 @@ import { AuthService } from '@auth0/auth0-angular';
 import { DOCUMENT } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Validator } from '../validator.service';
-import { unescapeIdentifier } from '@angular/compiler';
 
 @Component({
   selector: 'login',
@@ -50,6 +49,7 @@ export class LoginComponent implements OnInit {
           {
             console.log(`Logging in user: ${this.userEmail}`);
             this.loggedIn = true; // allow log in
+            this.val.setActiveUser(this.userEmail); // set active user
           }
         }
         else
@@ -93,6 +93,10 @@ export class LoginComponent implements OnInit {
               this.error = `User: ${profile.email} has been deactivated!`;
               this.logout();
             }
+            else
+            {
+              this.val.setActiveUser(String(profile.email)); // set active user
+            }
           }
           else
           {
@@ -114,11 +118,13 @@ export class LoginComponent implements OnInit {
     if (this.auth.user$) // if the user used auth0 to log in
     {
       this.auth.logout({ returnTo: this.document.location.origin }); // log out with auth0
+      this.val.setActiveUser(""); // set active user to an empty string
     }
     else if (this.loggedIn)
     {
       console.log(`Logging out user: ${this.userEmail}`);
       this.loggedIn = false;
+      this.val.setActiveUser(""); // set active user to an empty string
     }
 
     this.reset(); // reset member variables
