@@ -14,13 +14,18 @@ export class OpenComponent implements OnInit {
   numb: string = "";
   catalog: string = "";
   keyword: string = "";
+  name: string = "";
 
   // member fields to hold back end data and errors
   courseData: any; // data from course search and keyword search
   expand: boolean = false;
   scheData: any; // for public schedules
+  esData = new Array<any>(); // for expanded data of schedules
+  list: boolean = false;
   timeData: any; // timetable data for schedules
-  error: string = "";
+  courseError: string = "";
+  scheduleError: string = "";
+  timeError: string = "";
 
   constructor(private http: HttpClient, private val: Validator) { }
 
@@ -103,7 +108,7 @@ export class OpenComponent implements OnInit {
     }
     else
     {
-      this.error = "Invalid input in search fields!";
+      this.courseError = "Invalid input in search fields!";
       console.log("Invalid input!");
     }
   }
@@ -124,9 +129,20 @@ export class OpenComponent implements OnInit {
     }
     else
     {
-      this.error = "Invalid input in search fields!";
+      this.courseError = "Invalid input in search fields!";
       console.log("Invalid input!");
     }
+  }
+
+  // method to display up to 10 public schedules
+  displaySchedules()
+  {
+    this.reset(); // reset all back end result variables
+
+    this.http.get(`http://localhost:3000/api/open/schedules`).subscribe((data:any) => {
+      this.scheData = data.sort((a: any, b: any) => a.date_modified - b.date_modified); // get back end data object sorted by date modified
+    })
+    console.log(`Get up to 10 public schedules`);
   }
 
   // method to show all course details
@@ -135,13 +151,55 @@ export class OpenComponent implements OnInit {
     this.expand = true;
   }
 
+  // method to list schedule details
+  listRes()
+  {
+    // get a list of all public schedules
+    this.http.get(`http://localhost:3000/api/open/schedules`).subscribe((data:any) => {
+
+      for (let d in data) // for each of the schedules
+      {
+        this.http.get(`http://localhost:3000/api/open/schedules/${data[d].name}`).subscribe((dataN:any) => {
+          this.esData.push(dataN); // get expanded data object of that schedule
+        })
+      }
+    })
+    console.log("Searched for expanded schedule information");
+
+    this.list = true; // allow list to display once it is built
+  }
+
+  // method to get the timetable of a given course
+  timetable()
+  {
+    this.reset(); // reset all member variables
+
+    if ((this.name != "") && this.val.validate(this.name, 100))
+    {
+      // request to back end
+      this.http.get(`http://localhost:3000/api/open/schedules/full/${this.name}`).subscribe((data:any) => {
+        this.timeData = data; // get back end data object
+      })
+      console.log(`Searched for timetable data from schedule: ${this.name}`);
+    }
+    else
+    {
+      this.timeError = "Invalid input in name field!";
+      console.log("Invalid input!");
+    }
+  }
+
   // method to reset data variables from the back end
   reset()
   {
     this.courseData = undefined;
     this.expand = false;
     this.scheData = undefined;
+    this.esData.length = 0;
+    this.list = false;
     this.timeData = undefined;
-    this.error = "";
+    this.courseError = "";
+    this.scheduleError = "";
+    this.timeError = "";
   }
 }

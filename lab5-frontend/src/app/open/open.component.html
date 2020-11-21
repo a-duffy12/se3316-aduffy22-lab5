@@ -6,8 +6,8 @@
 <input type="text" placeholder="Keyword" [(ngModel)]="keyword">
 <button (click)="displayKey()">Search via Keyword</button>
 
-<div *ngIf="error">
-  <p>{{error}}</p>
+<div *ngIf="courseError">
+  <p>{{courseError}}</p>
 </div>
 
 <div *ngIf="courseData && !expand">
@@ -42,6 +42,61 @@
       <span>{{c.description}}</span>
       <span>{{c.long_description}}</span>
       <span>{{c.content}}</span>
+    </li>
+  </ul>
+</div>
+
+<h3>Search for Schedules</h3>
+<button (click)="displaySchedules()">Show Schedules</button>
+
+<div *ngIf="scheduleError">
+  <p>{{scheduleError}}</p>
+</div>
+
+<div *ngIf="scheData && !list">
+  <p>Displaying a sample of public schedules</p>
+  <ul class="list">
+    <li *ngFor="let s of scheData">
+      <span>{{s.name}} was made by {{s.creator}}, last edited {{s.date_modified}}, and contains {{s.course_count}} courses</span>
+    </li>
+  </ul>
+  <button (click)="listRes()">Expand</button>
+</div>
+
+<div *ngIf="scheData && list && esData">
+  <p>Displaying a sample of expanded public schedules</p>
+  <ul class="list">
+    <li *ngFor="let e of esData">
+      <span>Schedule: {{e.name}}</span>
+      <span>Description: {{e.description}}</span>
+      <ul>
+        <li *ngFor="let c of e.classes">
+          <span>Subject: {{c.subject_code}}, Course: {{c.course_code}}</span>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+<h3>Display Timetable</h3>
+<input type="text" placeholder="Schedule Name" [(ngModel)]="name">
+<button (click)="timetable()">View Timetable</button>
+
+<div *ngIf="timeError">
+  <p>{{timeError}}</p>
+</div>
+
+<div *ngIf="timeData">
+  <p>Timetable data for schedule: {{name}}</p>
+  <ul class="list">
+    <li *ngFor="let t of timeData">
+      <span>Timetable data for {{t.subject_code}}: {{t.course_code}}</span>
+      <span>Class number: {{t.number}}, Component: {{t.component}}</span>
+      <ul>
+        <li *ngFor="let i of t.times">
+          <span>Day: {{i.day}}, {{i.start}} - {{i.end}}</span>
+        </li>
+      </ul>
     </li>
   </ul>
 </div>
