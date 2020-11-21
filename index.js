@@ -556,7 +556,7 @@ orouter.get("/key/:keyword", (req, res) => {
  
     // match for catalog_nbg and/or className using substring and/or soft-matched
 
-    if (sanitizeInput(req.params.keyword, 100) && req.params.keyword.length >= 5)
+    if (sanitizeInput(req.params.keyword, 100) && req.params.keyword.length >= 4)
     {
         let courses = []; // empty array to hold all courses
         const key = new RegExp(req.params.keyword, 'g');
@@ -1127,7 +1127,7 @@ arouter.put("/users", (req, res) => {
             {
                 if (req.body.adds[u].email === udata[v].email) // if the email in the body matches a saved user
                 {
-                    if (udata[v].permission_level != "admin")
+                    if (udata[v].permission_level != "admin" && udata[v].verified)
                     {
                         udata[v].permission_level = "admin"; // set permission level to admin
                     }

@@ -1,1 +1,47 @@
-<p>open works!</p>
+<h3>Search for Courses</h3>
+<input type="text" placeholder="Subject Code" [(ngModel)]="subject">
+<input type="text" placeholder="Course Number" [(ngModel)]="numb">
+<input type="text" placeholder="Catalog Number" [(ngModel)]="catalog">
+<button (click)="displayCourses()">Search Courses</button>
+<input type="text" placeholder="Keyword" [(ngModel)]="keyword">
+<button (click)="displayKey()">Search via Keyword</button>
+
+<div *ngIf="error">
+  <p>{{error}}</p>
+</div>
+
+<div *ngIf="courseData && !expand">
+  <p>Displaying search results</p>
+  <button (click)="expandRes()">Expand</button>
+  <ul class="list">
+    <li *ngFor="let c of courseData">
+      <span>{{c.subject_code}} - {{c.course_code}}: {{c.class_name}}</span>
+      <span>Class section: {{c.class_section}}, {{c.component}} component</span>
+      <ul>
+        <li *ngFor="let t of c.times">
+          <span>Day: {{t.day}}, {{t.start}} - {{t.end}}</span>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+<div *ngIf="courseData && expand">
+  <p>Displaying expanded search results</p>
+  <ul class="list">
+    <li *ngFor="let c of courseData">
+      <span>{{c.subject_code}} - {{c.course_code}}: {{c.class_name}}</span>
+      <span>Class section: {{c.class_section}}, {{c.component}} component</span>
+      <ul>
+        <li *ngFor="let t of c.times">
+          <span>Day: {{t.day}}, {{t.start}} - {{t.end}}</span>
+        </li>
+      </ul>
+      <span>Class number: {{c.class_number}}, Enrollment: {{c.enrollment}}</span>
+      <span>Campus: {{c.campus}}, Classroom: {{c.classroom}}</span>
+      <span>{{c.description}}</span>
+      <span>{{c.long_description}}</span>
+      <span>{{c.content}}</span>
+    </li>
+  </ul>
+</div>
