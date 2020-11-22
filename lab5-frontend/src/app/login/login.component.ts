@@ -13,6 +13,7 @@ export class LoginComponent implements OnInit {
 
   // member fields for controlling state
   loggedIn: boolean = false;
+  newUser: boolean = false;
   buildLogin: boolean = false;
   buildUser: boolean = false;
   error: string = "";
@@ -59,10 +60,25 @@ export class LoginComponent implements OnInit {
         }
       },
       (error: any) => { // if the user does not exist, then automatically register them
-        console.log(`Registering user: ${this.userEmail}`);
-        this.loggedIn = true;
-        this.register();
+        console.log(`Unrecognized user: ${this.userEmail}`);
+        this.error = "Unrecognized user, please register!";
+        this.newUser = true;
       })
+    }
+    else if (this.userEmail && this.userPassword && this.val.validate(this.userPassword, 20))
+    {
+      this.error = "Please enter a valid email address!";
+      console.log("Invalid input!");
+    }
+    else if (this.userPassword && this.val.validate(this.userPassword, 20))
+    {
+      this.error = "Please enter an email address!";
+      console.log("Invalid input!");
+    }
+    else if (this.userEmail && this.val.validateEmail(this.userEmail))
+    {
+      this.error = "Please enter a password!";
+      console.log("Invalid input!")
     }
     else
     {
@@ -133,7 +149,9 @@ export class LoginComponent implements OnInit {
   // method to register used in back end database
   register()
   {
-    if (this.auth.user$ && !this.loggedIn) // if the user is logged in with Auth0
+    this.error = ""; // reset error message
+
+    if (this.auth.user$ && !this.newUser) // if the user is logged in with Auth0
     {
       this.auth.user$.subscribe((profile) => {
         let newUser: PostUser = { // create JSON to send to back end
@@ -150,20 +168,54 @@ export class LoginComponent implements OnInit {
         })
       })
     }
-    else if (this.loggedIn) // if the user is logged in locally
+    else if (this.newUser) // if the user is logged in locally
     {
-      let newUser: PostUser = { // create JSON to send to back end
-        name: this.userEmail.substring(0, this.userEmail.lastIndexOf("@")),
-        password: this.userPassword,
-        active: true,
-        verified: false,
-        permission_level: "secure"
-      }
-      // send new user data to back end
-      this.http.post(`http://localhost:3000/api/open/users/${this.userEmail}`, JSON.stringify(newUser), reqHeader).subscribe((data:any) => {
-          console.log(`Created user: ${this.userEmail}`)
-          console.log(data);
+
+      if (this.userEmail && this.userPassword && this.userName && this.val.validateEmail(this.userEmail) && this.val.validate(this.userPassword, 20) && this.val.validate(this.userName, 20))
+      {
+        // get request to see if the user already exists
+        this.http.get(`http://localhost:3000/api/open/users/${this.userEmail}`).subscribe((data:any) => {
+          this.error = `Cannot create a new account for existing user: ${data.email}`;
+        },
+        (error:any) => {
+
+          let user: PostUser = { // create JSON to send to back end
+            name: this.userName,
+            password: this.userPassword,
+            active: true,
+            verified: false,
+            permission_level: "secure"
+          }
+          // send new user data to back end
+          this.http.post(`http://localhost:3000/api/open/users/${this.userEmail}`, JSON.stringify(user), reqHeader).subscribe((data:any) => {
+            console.log(`Created user: ${this.userEmail}`)
+            console.log(data);
+          })
+
+          this.loggedIn = true;
+          this.newUser = false;
         })
+      }
+      else if (this.userEmail && this.userPassword && this.userName && this.val.validate(this.userPassword, 20) && this.val.validate(this.userName, 20))
+      {
+        this.error = "Please enter a valid email address!";
+        console.log("Invalid input!");
+      }
+      else if (this.userPassword && this.userName && this.val.validate(this.userPassword, 20) && this.val.validate(this.userName, 20))
+      {
+        this.error = "Please enter an email address!";
+        console.log("Invalid input!");
+      }
+      else if (this.userEmail && this.userName && this.val.validateEmail(this.userEmail) && this.val.validate(this.userName, 20))
+      {
+        this.error = "Please enter a pawwsord!";
+        console.log("Invalid input!");
+      }
+      else
+      {
+        this.error = "Invalid input!";
+        console.log("Invalid input!");
+      }
     }
   }
 

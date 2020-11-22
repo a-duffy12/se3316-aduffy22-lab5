@@ -563,7 +563,7 @@ orouter.get("/key/:keyword", (req, res) => {
 
         for (c in cdata)
         {
-            if (String(cdata[c].catalog_nbr).match(key) || String(cdata[c].className).match(key) || stringSimilarity.compareTwoStrings(req.params.keyword, String(cdata[c].catalog_nbr)) > 0.8 || stringSimilarity.compareTwoStrings(req.params.keyword, String(cdata[c].className)) > 0.8)
+            if (String(cdata[c].catalog_nbr).match(key) || String(cdata[c].className).match(key) || stringSimilarity.compareTwoStrings(req.params.keyword, String(cdata[c].catalog_nbr)) > 0.8 || stringSimilarity.compareTwoStrings(req.params.keyword, String(cdata[c].className)) > 0.5)
             {
                 let obj = {};
                 obj.course_code = cdata[c].catalog_nbr;
@@ -1254,7 +1254,7 @@ app.use("/api/admin", arouter); // install router object path for admin routes
 
 // get PORT environment variable, or use 3000 if not available
 const port = process.env.PORT || 3000;
-app.listen(port, () => {console.log(`Listeneing on port ${port}`)}); // choose which port to listen on
+app.listen(port, () => {console.log(`Listening on port ${port}`)}); // choose which port to listen on
 
 // function to read from referenced JSON file before each usage of the sdata array
 function getData(fileRef)

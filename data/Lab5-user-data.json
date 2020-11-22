@@ -22,5 +22,13 @@
         "verified": false,
         "permission_level": "secure",
         "email": "94aduffy@gmail.com"
+    },
+    {
+        "name": "Phobo",
+        "password": "newpass",
+        "active": true,
+        "verified": false,
+        "permission_level": "secure",
+        "email": "phobospuzzlegame@gmail.com"
     }
 ]
