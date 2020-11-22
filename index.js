@@ -630,7 +630,7 @@ orouter.get("/schedules", (req, res) => {
                 const obj = {}; // create empty object
                 obj.name = sdata[s].name; // add schedule name
                 obj.course_count = sdata[s].classes.length; // add number of classes
-                obj.creator = sdata[s].creator; // add creator of the schedule
+                obj.creator_name = sdata[s].creator_name; // set name of creator
                 obj.date_modified = sdata[s].date_modified; // add modification date of the schedule
                 schedules.push(obj); // add object to array
                 tally++;
@@ -666,6 +666,7 @@ orouter.get("/schedules/:schedule", (req, res) => {
         {
             let obj = {}; // create empty object
             obj.name = sdata[exIndex].name; // set schedule name
+            obj.creator_name = sdata[exIndex].creator_name; // set name of creator
             obj.classes = sdata[exIndex].classes; // set classes of the schedule
             obj.description = sdata[exIndex].description; // set description of the schedule
             res.send(obj); // send schedule data object
@@ -745,19 +746,19 @@ orouter.get("/schedules/full/:schedule", (req, res) => {
 });
 
 // display review for a given course
-orouter.get("/comments/:subject/:course/:email", (req, res) => {
+orouter.get("/comments/:subject/:course", (req, res) => {
 
-    if (sanitizeInput(req.params.subject, 8) && sanitizeInput(req.params.course, 5) && sanitizeEmail(req.params.email))
+    if (sanitizeInput(req.params.subject, 8) && sanitizeInput(req.params.course, 5))
     {
         rdata = getData(j4data); // get up to date comment data
 
-        const exIndex = rdata.findIndex(r => (r.subject_code === req.params.subject) && (r.course_code === req.params.course) && (r.author === req.params.email))
+        const exIndex = rdata.findIndex(r => (r.subject_code === req.params.subject) && (r.course_code === req.params.course))
 
         if (exIndex >= 0) // this exact comment already exists
         {
             if (rdata[exIndex].hidden) // comment is hidden
             {
-                res.status(400).send(`Comment for ${req.params.subject}: ${req.params.course} by ${req.params.email} is hidden!`);
+                res.status(400).send(`Comment for ${req.params.subject}: ${req.params.course} is hidden!`);
             }
             else if (!rdata[exIndex].hidden) // comment is not hidden
             {
@@ -766,16 +767,8 @@ orouter.get("/comments/:subject/:course/:email", (req, res) => {
         }
         else if (exIndex < 0) // if this exact comment does not already exist
         {
-            res.status(400).send(`Comment for ${req.params.subject}: ${req.params.course} by ${req.params.email} does not exist!`);
+            res.status(400).send(`Comment for ${req.params.subject}: ${req.params.course} does not exist!`);
         }
-    }
-    else if (sanitizeInput(req.params.subject, 8) && sanitizeInput(req.params.course, 5))
-    {
-        res.status(400).send("Invalid email address!");
-    }
-    else if (sanitizeEmail(req.params.email))
-    {
-        res.status(400).send("Invalid course!");
     }
     else
     {
@@ -810,7 +803,7 @@ srouter.route("/schedules/:schedule") // all routers that access a particular sc
                 }
             }
             
-            if (tally < 20)
+            if (tally < 20) // check that user has not already used all of their schedules
             {
                 const exIndex = sdata.findIndex(s => s.name === newSchedule.name); // find index of existing schedule of same name
 
@@ -829,18 +822,6 @@ srouter.route("/schedules/:schedule") // all routers that access a particular sc
             else
             {
                 res.status(400).send(`Unable to create schedule with name: ${newSchedule.name} as you have filled your 20 created schedules!`);
-            }
-
-            const exIndex = sdata.findIndex(s => s.name === newSchedule.name); // find index of existing schedule of same name
-
-            if (exIndex >= 0) // if schedule already exists
-            {
-                res.status(400).send(`Schedule already exists with name: ${newSchedule.name}`);
-            }
-            else if (exIndex < 0) // create a new schedule
-            {       
-                sdata.push(newSchedule); // add new schedule to the array
-                res.send(`Created schedule with name: ${newSchedule.name}`);   
             }
 
             setData(sdata, sfile); // send updated schedules array to JSON file

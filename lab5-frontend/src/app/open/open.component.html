@@ -42,6 +42,11 @@
       <span>{{c.description}}</span>
       <span>{{c.long_description}}</span>
       <span>{{c.content}}</span>
+      <ul class="review">
+        <li *ngFor="let r of revData">
+          <span *ngIf="r.subject_code == c.subject_code && r.course_code == c.course_code">Review by {{r.author}} on {{r.date_modified}} says: {{r.comment}}</span>
+        </li>
+      </ul>
     </li>
   </ul>
 </div>
@@ -57,7 +62,8 @@
   <p>Displaying a sample of public schedules</p>
   <ul class="list">
     <li *ngFor="let s of scheData">
-      <span>{{s.name}} was made by {{s.creator}}, last edited {{s.date_modified}}, and contains {{s.course_count}} courses</span>
+      <span>Schedule: {{s.name}} by {{s.creator_name}}</span>
+      <span>Last Modified: {{s.date_modified}}, contains {{s.course_count}} courses</span>
     </li>
   </ul>
   <button (click)="listRes()">Expand</button>
@@ -67,7 +73,7 @@
   <p>Displaying a sample of expanded public schedules</p>
   <ul class="list">
     <li *ngFor="let e of esData">
-      <span>Schedule: {{e.name}}</span>
+      <span>Schedule: {{e.name}} by {{e.creator_name}}</span>
       <span>Description: {{e.description}}</span>
       <ul>
         <li *ngFor="let c of e.classes">

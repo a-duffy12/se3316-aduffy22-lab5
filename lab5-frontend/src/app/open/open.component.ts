@@ -18,6 +18,8 @@ export class OpenComponent implements OnInit {
 
   // member fields to hold back end data and errors
   courseData: any; // data from course search and keyword search
+  allRevData: any; // data for all course reviews
+  revData = new Array<any>(); // data for course reviews
   expand: boolean = false;
   scheData: any; // for public schedules
   esData = new Array<any>(); // for expanded data of schedules
@@ -148,7 +150,23 @@ export class OpenComponent implements OnInit {
   // method to show all course details
   expandRes()
   {
-    this.expand = true;
+    // request for all existing reviews
+    this.http.get(`http://localhost:3000/api/admin/comments`).subscribe((data:any) => {
+      this.allRevData = data; // get all reviews as an object
+
+      for (let c in this.courseData) // for all courses returned in the search
+      {
+        for (let r in this.allRevData) // check if they have a review
+        {
+          if (this.allRevData[r].subject_code == this.courseData[c].subject_code && this.allRevData[r].course_code == this.courseData[c].course_code && !this.allRevData[r].hidden) // if the review matches
+          {
+            this.revData.push(this.allRevData[r]); // add that rview to the list
+          }
+        }
+      }
+    })
+
+    this.expand = true; // allow the new data to be displayed
   }
 
   // method to list schedule details
@@ -193,6 +211,8 @@ export class OpenComponent implements OnInit {
   reset()
   {
     this.courseData = undefined;
+    this.allRevData = undefined;
+    this.revData.length = 0;
     this.expand = false;
     this.scheData = undefined;
     this.esData.length = 0;
@@ -203,3 +223,4 @@ export class OpenComponent implements OnInit {
     this.timeError = "";
   }
 }
+
