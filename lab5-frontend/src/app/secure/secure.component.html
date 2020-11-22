@@ -1,16 +1,15 @@
-<p>secure works!</p>
-
-<div *ngIf="activeUser">
+<div *ngIf="activeUser" class="section" id="create-update">
 
   <h3>Create and Update Schedules</h3>
   <input type="text" placeholder="Schedule Name" [(ngModel)]="name">
   <input type="number" [(ngModel)]="count">
-  <input type="text" [(ngModel)]="description">
+  <input type="text" placeholder="Description" [(ngModel)]="description">
+  <p>Check box to make schedule public</p>
   <input type="checkbox" [(ngModel)]="vis" [ngModelOptions]="{standalone: true}">
   <button (click)="buildSchedule()">Build</button>
 
   <div *ngIf="(build && name && (count >= 0) && (count <= 15))">
-    <p>Enter subject and course code pairs</p>
+    <p *ngIf="count > 0">Enter subject and course code pairs</p>
     <ul class="list">
       <li *ngFor="let item of [].constructor(count); let i = index">
         <input type="text" placeholder="Subject" [(ngModel)]="subjectCodes[i]">
@@ -24,6 +23,23 @@
 
   <div *ngIf="makeError">
     <p>{{makeError}}</p>
+  </div>
+
+</div>
+
+<div *ngIf="activeUser" class="section" id="delete">
+
+  <h3>Delete a Schedule</h3>
+  <input type="text" placeholder="Schedule" [(ngModel)]="dname">
+  <button (click)="deleteStart()">Delete</button>
+
+  <div *ngIf="con">
+    <input type="text" placeholder="Type 'yes' to Confirm" [(ngModel)]="del">
+    <button (click)="deleteSchedule()">Confirm Delete</button>
+  </div>
+
+  <div *ngIf="delError">
+    <p>{{delError}}</p>
   </div>
 
 </div>

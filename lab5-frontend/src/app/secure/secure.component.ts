@@ -20,11 +20,15 @@ export class SecureComponent implements OnInit {
   clear: boolean = true;
   subjectCodes: string[] = Array (15);
   courseCodes: string[] = Array (15);
+  dname: string = "";
+  con: boolean = false;
+  del: string = "";
 
   // member variables to hold output
   cdata: any;
-  scheData: any;
+  backData: any;
   makeError: string = "";
+  delError: string = "";
 
   // fields to track whether a user is logged in or not
   subscription: Subscription;
@@ -183,7 +187,7 @@ export class SecureComponent implements OnInit {
         {
           // send request with schedule "obj" in the body and "name" in the URL
           this.http.post(`http://localhost:3000/api/secure/schedules/${this.name}`, JSON.stringify(obj), reqHeader).subscribe((data: any) => {
-            this.scheData = data; // get response as string
+            this.backData = data; // get response as string
           })
           console.log(`Created schedule with name: ${this.name}`);
         }
@@ -322,7 +326,7 @@ export class SecureComponent implements OnInit {
         {
           // send request with schedule "obj" in the body and "name" in the URL
           this.http.put(`http://localhost:3000/api/secure/schedules/${this.name}`, JSON.stringify(obj), reqHeader).subscribe((data: any) => {
-            this.scheData = data; // get response as string
+            this.backData = data; // get response as string
           })
           console.log(`Updated schedule with name: ${this.name}`);
         }
@@ -369,13 +373,63 @@ export class SecureComponent implements OnInit {
     }
   }
 
+  // method to begin 2-step deletion process
+  deleteStart()
+  {
+    this.reset(); // reset all member variables
+    this.con = true; // begin confirmation process
+  }
+
+  // method to delete the given schedule
+  deleteSchedule()
+  {
+    this.delError = "";
+
+    if (this.con && this.del.toLocaleLowerCase() == "yes")
+    {
+      if ((this.dname != "") && this.val.validate(this.dname, 100))
+      {
+        let obj: Del = { // create body
+          creator: this.activeUser
+        }
+
+        let reqH = { // create header and add existing body
+          headers: new HttpHeaders({
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "Access-Control-Allow-Headers": "Content-Type"
+          }),
+          body: JSON.stringify(obj)
+        }
+
+        this.http.delete(`http://localhost:3000/api/secure/schedules/${this.dname}`, reqH).subscribe((data: any) => {
+          this.backData = data; // get response as string
+        })
+        console.log(`Deleted schedule with name: ${this.dname}`);
+      }
+      else
+      {
+        this.delError = "Invalid input in name field!";
+        console.log("Invalid input!");
+      }
+    }
+    else
+    {
+      this.delError = `Confirmation denied, unable to delete schedule with name: ${this.dname}`;
+      console.log("Invalid confirmation!");
+    }
+  }
+
   // method to reset member fields
   reset()
   {
     this.build = false;
     this.clear = true;
-    this.scheData = undefined;
+    this.backData = undefined;
     this.makeError = "";
+    this.delError = "";
+    this.con = false;
+    this.del = "";
   }
 
 }
@@ -396,6 +450,10 @@ interface Sched {
   date_modified: string,
   infringing: boolean;
 };
+
+interface Del {
+  creator: string
+}
 
 // build options for the http requests
 const reqHeader = {
