@@ -1,6 +1,30 @@
 <p>secure works!</p>
 
 <div *ngIf="activeUser">
-  <p>SECURE CONTENT</p>
+
+  <h3>Create and Update Schedules</h3>
+  <input type="text" placeholder="Schedule Name" [(ngModel)]="name">
+  <input type="number" [(ngModel)]="count">
+  <input type="text" [(ngModel)]="description">
+  <input type="checkbox" [(ngModel)]="vis" [ngModelOptions]="{standalone: true}">
+  <button (click)="buildSchedule()">Build</button>
+
+  <div *ngIf="(build && name && (count >= 0) && (count <= 15))">
+    <p>Enter subject and course code pairs</p>
+    <ul class="list">
+      <li *ngFor="let item of [].constructor(count); let i = index">
+        <input type="text" placeholder="Subject" [(ngModel)]="subjectCodes[i]">
+        <input type="text" placeholder="Course Code" [(ngModel)]="courseCodes[i]">
+      </li>
+    </ul>
+  </div>
+
+  <button (click)="createSchedule()">Create</button>
+  <button (click)="updateSchedule()">Update</button>
+
+  <div *ngIf="makeError">
+    <p>{{makeError}}</p>
+  </div>
+
 </div>
 
