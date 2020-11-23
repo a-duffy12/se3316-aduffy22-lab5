@@ -1011,38 +1011,37 @@ srouter.get("/schedules", (req, res) => {
 });
 
 // add a review for a specific course POST 4e
-srouter.post("/comments/:subject/:course/:email", (req, res) => {
+srouter.post("/comments/:subject/:course", (req, res) => {
 
-    if (sanitizeInput(req.params.subject, 8) && sanitizeInput(req.params.course, 5) && sanitizeEmail(req.params.email))
+    if (sanitizeInput(req.params.subject, 8) && sanitizeInput(req.params.course, 5))
     {
         rdata = getData(j4data); // get up to date comment data
 
         const newComment = req.body; // get info for updated comment
         newComment.subject_code = req.params.subject; // set subject of comment
         newComment.course_code = req.params.course; // set course of comment
-        newComment.author = req.params.email; // set author of comment
 
-        const exIndex = rdata.findIndex(r => (r.subject_code === newComment.subject_code) && (r.course_code === newComment.course_code) && (r.author === newComment.author))
+        const exIndex = rdata.findIndex(r => (r.subject_code === newComment.subject_code) && (r.course_code === newComment.course_code) && (r.author === newComment.creator))
 
         if (exIndex >= 0) // this exact comment already exists
         {
-            res.status(400).send(`Comment for ${newComment.subject_code}: ${newComment.course_code} by ${newComment.author} already exists!`);
+            res.status(400).send(`Comment for ${newComment.subject_code}: ${newComment.course_code} by ${newComment.creator} already exists!`);
         }
         else if (exIndex < 0) // if this exact comment does not already exist
         {
             rdata.push(newComment); // add new comment to the array
-            res.send(`Created comment for ${newComment.subject_code}: ${newComment.course_code} by ${newComment.author}`);
+            res.send(`Created comment for ${newComment.subject_code}: ${newComment.course_code} by ${newComment.creator}`);
         }
 
         setData(rdata, rfile); // send updated comments array to JSON file
     }
-    else if (sanitizeInput(req.params.subject, 8) && sanitizeInput(req.params.course, 5))
-    {
-        res.status(400).send("Invalid email address!");
-    }
-    else if (sanitizeEmail(req.params.email))
+    else if (sanitizeInput(req.params.subject, 8))
     {
         res.status(400).send("Invalid course!");
+    }
+    else if (sanitizeInput(req.params.course, 5))
+    {
+        res.status(400).send("Invalid subject!");
     }
     else
     {
@@ -1132,7 +1131,7 @@ arouter.put("/comments/:subject/:course/:email", (req, res) => {
     {
         rdata = getData(j4data); // get up to date comment data
 
-        const exIndex = rdata.findIndex(r => (r.subject_code === req.params.subject) && (r.course_code === req.params.course) && (r.author === req.params.email))
+        const exIndex = rdata.findIndex(r => (r.subject_code === req.params.subject) && (r.course_code === req.params.course) && (r.creator === req.params.email))
 
         if (exIndex >= 0) // this exact comment already exists
         {

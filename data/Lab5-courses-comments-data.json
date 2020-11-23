@@ -2,7 +2,8 @@
     {
         "subject_code": "ENGSCI",
         "course_code": "1050",
-        "author": "Aiden",
+        "creator": "aduffy22@uwo.ca",
+        "creator_name": "Aiden",
         "comment": "Highly recommend getting a location spoofer for attendance",
         "date_modified": "2020-11-18T00:03:34+0000",
         "hidden": false
@@ -13,7 +14,8 @@
         "subject_code": "ENGSCI",
         "course_code": "1021A",
         "date_modified": "2020-11-19T00:03:34+0000",
-        "author": "Aiden"
+        "creator": "aduffy22@uwo.ca",
+        "creator_name": "Aiden"
     },
     {
         "comment": "LOVED IT",
@@ -21,6 +23,16 @@
         "subject_code": "ENGSCI",
         "course_code": "1021A",
         "date_modified": "2020-11-19T00:03:34+0000",
-        "author": "aiden"
+        "creator": "aduffy22@uwo.ca",
+        "creator_name": "Aiden"
+    },
+    {
+        "creator": "12aduffy@gmail.com",
+        "creator_name": "12ad",
+        "comment": "testing again",
+        "date_modified": "2020-11-23T00:43:13.501Z",
+        "hidden": false,
+        "subject_code": "ENGSCI",
+        "course_code": "1021A"
     }
 ]

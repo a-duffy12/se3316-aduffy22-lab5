@@ -11,24 +11,30 @@ import { interval, Observable, Subscription } from 'rxjs';
 export class SecureComponent implements OnInit {
 
   // member variables for input fields
-  name: string = "";
-  visibility: string = "";
-  vis: boolean = false;
-  description: string = "";
-  count: number = 0;
-  build: boolean = false;
-  clear: boolean = true;
+  name: string = ""; // name of schedule to update or create
+  visibility: string = ""; // visibility of schedule
+  vis: boolean = false; // visibility bool
+  description: string = ""; // description of schedule
+  count: number = 0; // number of courses in the schedule
+  build: boolean = false; // track the activation of the build menu
+  clear: boolean = true; // whether there a no illegal courses
   subjectCodes: string[] = Array (15);
   courseCodes: string[] = Array (15);
-  dname: string = "";
-  con: boolean = false;
-  del: string = "";
+  dname: string = ""; // name of schedule to delete
+  con: boolean = false; // track the activation of the delete confirmation menu
+  del: string = ""; // track deletion confirmation message
+  subject: string= ""; // subject of course to review
+  course: string = ""; // course code of course to review
+  comment: string = ""; // comment for the reivew
+  rev: boolean = false; // track the activation of the review confirmation menu
+  view: string = ""; // track review confirmation message
 
   // member variables to hold output
   cdata: any;
   backData: any;
   makeError: string = "";
   delError: string = "";
+  revError: string = "";
 
   // fields to track whether a user is logged in or not
   subscription: Subscription;
@@ -193,7 +199,7 @@ export class SecureComponent implements OnInit {
         }
         else
         {
-          console.log(`Unable to create schedule with name: ${this.name} due to illegal courses`);
+          console.log(`Unable to create schedule with name: ${this.name} due to illegal course(s)`);
         }
       })
     }
@@ -383,7 +389,7 @@ export class SecureComponent implements OnInit {
   // method to delete the given schedule
   deleteSchedule()
   {
-    this.delError = "";
+    this.delError = ""; // reset deletion error
 
     if (this.con && this.del.toLocaleLowerCase() == "yes")
     {
@@ -418,6 +424,120 @@ export class SecureComponent implements OnInit {
       this.delError = `Confirmation denied, unable to delete schedule with name: ${this.dname}`;
       console.log("Invalid confirmation!");
     }
+
+    this.con = false;
+  }
+
+  // method to begin the 2-step review process
+  reviewStart()
+  {
+    this.reset();
+    this.rev = true;
+  }
+
+  // method to create a review for a course
+  reviewCourse()
+  {
+    this.revError = ""; // reset review error
+
+    if (this.rev && this.view.toLocaleLowerCase() == "yes")
+    {
+      if (this.subject != "" && this.course != "" && this.comment != "" && this.val.validate(this.subject, 8) && this.val.validate(this.course, 5) && this.val.validate(this.comment, 1000))
+      {
+        // back end request to get username
+        this.http.get(`http://localhost:3000/api/open/users/${this.activeUser}`).subscribe((data:any) => {
+
+          // create empty review object
+          let obj: Rev = {
+            creator: this.activeUser,
+            creator_name: data.name,
+            comment: this.comment,
+            date_modified: (new Date()).toISOString(),
+            hidden: false
+          }
+
+          let found = false; // track whether the request course exists or not
+
+          if (this.course.length == 4) // check with course number
+            {
+              for (let c in this.cdata) // for all courses
+              {
+                if (this.subject.toUpperCase() == this.cdata[c].subject && this.course.toUpperCase() == String(this.cdata[c].catalog_nbr).substring(0, 4)) // if the course is valid
+                {
+                  found = true; // requested course exists
+                  break;
+                }
+              }
+            }
+            else if (this.course.length == 5) // check with catalog number
+            {
+              for (let c in this.cdata) // for all courses
+              {
+                if (this.subject.toUpperCase() == this.cdata[c].subject && this.course.toUpperCase() == this.cdata[c].catalog_nbr) // if the course is valid
+                {
+                  found = true; // requested course exists
+                  break;
+                }
+              }
+            }
+
+            if (found == true) // the requested course exists
+            {
+              // request to send review to back end
+              this.http.post(`http://localhost:3000/api/secure/comments/${this.subject.toUpperCase()}/${this.course.toUpperCase()}`, JSON.stringify(obj), reqHeader).subscribe((data:any) => {
+                this.backData = data; // get response from back end
+              })
+              console.log(`Created review for ${this.subject.toUpperCase()}: ${this.course.toUpperCase()}`);
+            }
+            else // the requested course does not exists
+            {
+              console.log(`Unable to create review for ${this.subject.toUpperCase()}: ${this.course.toUpperCase()} due to being an illegal course`);
+            }
+        })
+      }
+      else if (this.course != "" && this.comment != "" && this.val.validate(this.course, 5) && this.val.validate(this.comment, 1000))
+      {
+        this.revError = "Invalid input in subject field!";
+        console.log("Invalid input!");
+      }
+      else if (this.subject != "" && this.comment != "" && this.val.validate(this.subject, 8) && this.val.validate(this.comment, 1000))
+      {
+        this.revError = "Invalid input in course code field!";
+        console.log("Invalid input!");
+      }
+      else if (this.subject != "" && this.course != "" && this.val.validate(this.subject, 8) && this.val.validate(this.course, 5))
+      {
+        this.revError = "Invalid input in the comment field!";
+        console.log("Invalid input!");
+      }
+      else if (this.subject != "" && this.val.validate(this.subject, 8))
+      {
+        this.revError = "Invalid input in the course code and comment fields!";
+        console.log("Invalid input!");
+      }
+      else if (this.course != "" && this.val.validate(this.course, 5))
+      {
+        this.revError = "Invalid input in the subject and comment fields!";
+        console.log("Invalid input!");
+      }
+      else if (this.comment != "" && this.val.validate(this.comment, 1000))
+      {
+        this.revError = "Invalid input in the subject and course code fields!";
+        console.log("Invalid input!");
+      }
+      else
+      {
+        this.revError = "Invalid input in the subject, course code, and comment fields!";
+        console.log("Invalid input!");
+      }
+    }
+    else
+    {
+      this.revError = `Confirmation denied, unable to post review for ${this.subject.toUpperCase()}: ${this.course.toUpperCase()}`;
+      console.log("Invalid confirmation!");
+    }
+
+    this.rev = false;
   }
 
   // method to reset member fields
@@ -430,6 +550,9 @@ export class SecureComponent implements OnInit {
     this.delError = "";
     this.con = false;
     this.del = "";
+    this.revError = "";
+    this.rev = false;
+    this.view = "";
   }
 
 }
@@ -453,6 +576,14 @@ interface Sched {
 
 interface Del {
   creator: string
+}
+
+interface Rev {
+  creator: string,
+  creator_name: string,
+  comment: string,
+  date_modified: string,
+  hidden: boolean
 }
 
 // build options for the http requests

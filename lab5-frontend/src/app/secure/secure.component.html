@@ -44,3 +44,22 @@
 
 </div>
 
+<div *ngIf="activeUser" class="section" id="review">
+
+  <h3>Review a Course</h3>
+  <input type="text" placeholder="Subject" [(ngModel)]="subject">
+  <input type="text" placeholder="Course Code" [(ngModel)]="course">
+  <input type="text" placeholder="Comment" [(ngModel)]="comment">
+  <button (click)="reviewStart()">Post Review</button>
+
+  <div *ngIf="rev">
+    <input type="text" placeholder="Type 'yes' to Confrim" [(ngModel)]="view">
+    <button (click)="reviewCourse()">Confirm Review</button>
+  </div>
+
+  <div *ngIf="revError">
+    <p>{{revError}}</p>
+  </div>
+
+
+</div>
