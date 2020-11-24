@@ -1,5 +1,11 @@
-<p>admin works!</p>
+<div *ngIf="ad" class="section" id="give-admin">
 
-<div *ngIf="ad">
-  <p>ADMIN CONTENT</p>
+  <h3>Give Admin Persmissions</h3>
+  <input type="text" placeholder="User Email" [(ngModel)]="addUser">
+  <button (click)="giveAdmin()">Give Admin</button>
+
+  <div *ngIf="gError">
+    <p>{{gError}}</p>
+  </div>
+
 </div>

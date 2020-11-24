@@ -11,7 +11,7 @@
         "name": "12ad",
         "password": "randommm",
         "active": true,
-        "verified": false,
+        "verified": true,
         "permission_level": "secure",
         "email": "12aduffy@gmail.com"
     },

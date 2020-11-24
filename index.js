@@ -1013,7 +1013,7 @@ srouter.get("/schedules", (req, res) => {
 // add a review for a specific course POST 4e
 srouter.post("/comments/:subject/:course", (req, res) => {
 
-    if (sanitizeInput(req.params.subject, 8) && sanitizeInput(req.params.course, 5))
+    if (sanitizeInput(req.params.subject, 8) && sanitizeInput(req.params.course, 5) && sanitizeInput(req.body))
     {
         rdata = getData(j4data); // get up to date comment data
 
@@ -1095,32 +1095,29 @@ srouter.put("/users/:email", (req, res) => {
 // ADMIN ROUTES --------------------------------
 
 // give admin status to a given user PUT 5b
-arouter.put("/users", (req, res) => {
+arouter.put("/users/:email", (req, res) => {
 
-    if (sanitizeInput(req.params.body), 1000) 
+    if (sanitizeEmail(req.params.email, 100)) 
     {
         udata = getData(j3data); // get user account data
-
-        for (u in req.body.adds) // iterate through usernames in body
+        
+        for (v in udata) // iterate through all saved users
         {
-            for (v in udata) // iterate through all saved users
+            if (req.params.email === udata[v].email) // if the email in the body matches a saved user
             {
-                if (req.body.adds[u].email === udata[v].email) // if the email in the body matches a saved user
+                if (udata[v].permission_level != "admin" && udata[v].verified)
                 {
-                    if (udata[v].permission_level != "admin" && udata[v].verified)
-                    {
-                        udata[v].permission_level = "admin"; // set permission level to admin
-                    }
+                    udata[v].permission_level = "admin"; // set permission level to admin
                 }
             }
         }
         
-        res.send("Updated permission levels of given users to 'admin'");
+        res.send(`Updated permission levels of ${req.params.email} to 'admin'`);
         setData(udata, ufile); // update array of users in JSON file
     }  
     else
     {
-        res.status(400).send("Invalid input in request body!");
+        res.status(400).send(`Invalid input for email: ${req.params.email}`);
     }
 })
 
