@@ -1094,8 +1094,8 @@ srouter.put("/users/:email", (req, res) => {
 
 // ADMIN ROUTES --------------------------------
 
-// give admin status to a given user PUT 5b
-arouter.put("/users/:email", (req, res) => {
+// give and take admin status to a given user PUT 5b
+arouter.put("/users/ad/:email", (req, res) => {
 
     if (sanitizeEmail(req.params.email, 100)) 
     {
@@ -1108,11 +1108,16 @@ arouter.put("/users/:email", (req, res) => {
                 if (udata[v].permission_level != "admin" && udata[v].verified)
                 {
                     udata[v].permission_level = "admin"; // set permission level to admin
+                    res.send(`Updated permission levels of ${req.params.email} to 'admin'`);
+                }
+                else if (udata[v].permission_level != "secure" && udata[v].verified)
+                {
+                    udata[v].permission_level = "secure"; // set permission level to secure
+                    res.send(`Updated permission levels of ${req.params.email} to 'secure'`);
                 }
             }
         }
         
-        res.send(`Updated permission levels of ${req.params.email} to 'admin'`);
         setData(udata, ufile); // update array of users in JSON file
     }  
     else
@@ -1167,7 +1172,7 @@ arouter.put("/comments/:subject/:course/:email", (req, res) => {
 })
 
 // activate and deactivate a given user PUT 5d
-arouter.put("/users/:email", (req, res) => {
+arouter.put("/users/de/:email", (req, res) => {
 
     if (sanitizeEmail(req.params.email)) 
     {

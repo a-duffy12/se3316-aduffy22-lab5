@@ -1,11 +1,68 @@
 <div *ngIf="ad" class="section" id="give-admin">
 
-  <h3>Give Admin Persmissions</h3>
+  <h3>Give / Take Admin Persmissions</h3>
   <input type="text" placeholder="User Email" [(ngModel)]="addUser">
-  <button (click)="giveAdmin()">Give Admin</button>
+  <button (click)="giveAdmin()">Give /Take Admin</button>
+  <button (click)="displayUsersA()">Show All Users</button>
 
   <div *ngIf="gError">
     <p>{{gError}}</p>
   </div>
 
+  <div *ngIf="gData">
+    <p>Displaying all users</p>
+    <ul class="list">
+      <li *ngFor="let g of gData">
+        <span>User {{g.email}} ({{g.name}}) is a(n) {{g.permission_level}} user, is active: {{g.active}}</span>
+      </li>
+    </ul>
+  </div>
+
 </div>
+
+<div *ngIf="ad" class="section" id="hide-review">
+
+  <h3>Show / Hide Reviews</h3>
+  <input type="text" placeholder="Subject" [(ngModel)]="subject">
+  <input type="text" placeholder="Course Code" [(ngModel)]="course">
+  <input type="text" placeholder="User Email" [(ngModel)]="userEmail">
+  <button (click)="shReview()">Show / Hide Review</button>
+  <button (click)="displayReviews()">Show All Reviews</button>
+
+  <div *ngIf="rError">
+    <p>{{rError}}</p>
+  </div>
+
+  <div *ngIf="rData">
+    <p>Displaying all reviews</p>
+    <ul class="list">
+      <li *ngFor="let r of rData">
+        <span>Review of {{r.subject_code}}: {{r.course_code}} by {{r.creator}}, is hidden: {{r.hidden}}</span>
+      </li>
+    </ul>
+  </div>
+
+</div>
+
+<div *ngIf="ad" class="section" id="deactivate-user">
+
+  <h3>Actiavte / Deactive Users</h3>
+  <input type="text" placeholder="User Email" [(ngModel)]="deUser">
+  <button (click)="daUser()">Activate / Deactivate User</button>
+  <button (click)="displayUsersB()">Show All Users</button>
+
+  <div *ngIf="dError">
+    <p>{{dError}}</p>
+  </div>
+
+  <div *ngIf="dData">
+    <p>Displaying all users</p>
+    <ul class="list">
+      <li *ngFor="let d of dData">
+        <span>User {{d.email}} ({{d.name}}) is a(n) {{d.permission_level}} user, is active: {{d.active}}</span>
+      </li>
+    </ul>
+  </div>
+
+</div>
+

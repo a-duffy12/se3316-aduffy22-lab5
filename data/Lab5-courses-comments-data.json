@@ -10,7 +10,7 @@
     },
     {
         "comment": "new test comment for materials",
-        "hidden": false,
+        "hidden": true,
         "subject_code": "ENGSCI",
         "course_code": "1021A",
         "date_modified": "2020-11-19T00:03:34+0000",
