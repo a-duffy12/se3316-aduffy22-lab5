@@ -1,0 +1,22 @@
+<h3>View Web App Policies and Notices</h3>
+<button (click)="showPolicy()">Show / Hide Privacy Policy</button>
+<button (click)="showDMCA()">Show / Hide DMCA Notice</button>
+<p>Contact the site creator at aduffy22@uwo.ca for any questions</p>
+
+<div *ngIf="pol" id="privacy-policy">
+  <iframe src="https://docs.google.com/document/d/e/2PACX-1vQUwN669cYSYOCUqcXNToLvpvZXwxuD2-Ajhvha3u861EFXum8Bk8pvR8jPhC7AyxIpDR0VO9xZfk93/pub?embedded=true"></iframe>
+</div>
+
+<div *ngIf="dmca" id="dmca">
+  <iframe src="https://docs.google.com/document/d/e/2PACX-1vTrmI_5J6MreykAQC9PG7NFIE34PotHGbVkPuAjzdo--wmuFmq1psB63rWZqHR3hLmRjY_fQwMXeY1j/pub?embedded=true"></iframe>
+</div>
+
+<div *ngIf="ad" id="privacy-policy-mod">
+  <p>Click the following link to modify the privacy policy</p>
+  <a href="https://docs.google.com/document/d/1ZNCOgeDnLmnSf2-7Spf1IpR0CliLdkc1ine3kyv8nno/edit?usp=sharing" target="_blank">Edit Privacy Policy</a>
+</div>
+
+<div *ngIf="ad" id="dmca-mod">
+  <p>Click the following link to modify the DMCA notices</p>
+  <a href="https://docs.google.com/document/d/1ASarYKBqu0ixr8AfiWTd5pmxZdK2hKCbdiJTeq2AzCI/edit?usp=sharing" target="_blank">Edit DMCA Notices</a>
+</div>

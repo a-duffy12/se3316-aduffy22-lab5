@@ -11,6 +11,7 @@ import { OpenComponent } from './open/open.component';
 import { SecureComponent } from './secure/secure.component';
 import { AdminComponent } from './admin/admin.component';
 import { AuthModule } from '@auth0/auth0-angular';
+import { PolicyComponent } from './policy/policy.component';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import { AuthModule } from '@auth0/auth0-angular';
     LoginComponent,
     OpenComponent,
     SecureComponent,
-    AdminComponent
+    AdminComponent,
+    PolicyComponent
   ],
   imports: [
     BrowserModule,
