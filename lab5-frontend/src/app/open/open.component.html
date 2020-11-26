@@ -46,7 +46,7 @@
         <span>{{c.content}}</span>
         <ul class="review">
           <li *ngFor="let r of revData">
-            <span *ngIf="r.subject_code == c.subject_code && r.course_code == c.course_code">Review by {{r.creator}} on {{r.date_modified}} says: {{r.comment}}</span>
+            <span *ngIf="r.subject_code == c.subject_code && r.course_code == c.course_code">Review by {{r.creator_name}} on {{r.date_modified}} says: {{r.comment}}</span>
           </li>
         </ul>
       </li>

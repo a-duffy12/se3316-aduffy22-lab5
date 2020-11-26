@@ -1,19 +1,19 @@
 <div class="para">
   <p>This web application is designed to allow Western Students to easily build their scheduels</p>
   <p>Unauthenticated users may browse for courses or view public schedules</p>
-  <p>Login with the options below to create your own scheduels</p>
+  <p>Login with the options below to create your own schedules</p>
 </div>
 
 <div *ngIf="(auth.isAuthenticated$ | async) || loggedIn">
   <button (click)="logout()">Logout</button>
 </div>
 
-<div *ngIf="!(auth.isAuthenticated$ | async) && !loggedIn">
-  <h3>Log in or sign up locally</h3>
+<div *ngIf="!(auth.isAuthenticated$ | async) && !loggedIn" class="section">
+  <h3>Login Locally</h3>
   <input type="text" placeholder="Email" [(ngModel)]="userEmail">
-  <input type="text" placeholder="Password" [(ngModel)]="userPassword">
+  <input type="password" placeholder="Password" [(ngModel)]="userPassword">
   <button (click)="login()">Login Locally</button>
-  <h3>Log in or sign up via third party authentication</h3>
+  <h3>Login via Third Party</h3>
   <button (click)="loginA()">Login with Auth0</button>
 </div>
 
@@ -21,7 +21,8 @@
   <button (click)="register()">Register via Auth0</button>
 </div>
 
-<div *ngIf="newUser">
+<div *ngIf="newUser" class="section">
+  <h3>Register as a New User</h3>
   <input type="text" placeholder="Email" [(ngModel)]="userEmail">
   <input type="text" placeholder="Password" [(ngModel)]="userPassword">
   <input type="text" placeholder="Username" [(ngModel)]="userName">

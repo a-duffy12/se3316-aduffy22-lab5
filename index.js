@@ -7,17 +7,18 @@ const j1data = require("./data/Lab5-timetable-data.json"); // json data for cour
 const j2data = require("./data/Lab5-schedule-data.json"); // json data for schedules
 const j3data = require("./data/Lab5-user-data.json"); // json data for users
 const j4data = require("./data/Lab5-courses-comments-data.json"); // json data for course comments
+const j5data = require("./data/Lab5-dmca-records-data.json"); // json data for dmca records
 
 const cdata = JSON.parse(JSON.stringify(j1data)); // parse json object holding the courses
 const sfile = "./data/Lab5-schedule-data.json"; // file holding json data for scehdules
 const ufile = "./data/Lab5-user-data.json"; // file holding json data for users
 const rfile = "./data/Lab5-courses-comments-data.json"; // file holding data for course comments
+const dfile = "./data/Lab5-dmca-records-data.json"; // file holding data of DMCA records
 
 const app = express(); // create app constant
 const orouter = express.Router(); // create router object for open routes
 const srouter = express.Router(); // create router object for secure routes
 const arouter = express.Router(); // create router object for admin routes
-
 
 const corsOptions = { // options for cors
     origin: "http://localhost:4200",
@@ -551,7 +552,7 @@ orouter.get("/courses/:subject?/:courseNum?/:catalog?", (req, res) => {
     }
 });
 
-// search based on a keyword of 5+ chars GET 3d/3e
+// search based on a keyword of 4+ chars GET 3d/3e
 orouter.get("/key/:keyword", (req, res) => {
  
     // match for catalog_nbg and/or className using substring and/or soft-matched
@@ -1207,6 +1208,43 @@ arouter.put("/users/de/:email", (req, res) => {
 
 })
 
+// record a DMCA infringement POST 7d
+arouter.post("/dmca/:email", (req, res) => {
+
+    if (sanitizeEmail(req.params.email) && sanitizeInput(req.body))
+    {
+        ddata = getData(j5data); // get DMCA records from json file
+
+        const newRecord = req.body; // build the record
+        newRecord.user = req.params.email; // add the user field
+
+        const exIndex = ddata.findIndex(d => (d.user === newRecord.user) && (d.type === newRecord.type) && (d.song === newRecord.song) && (d.artist === newRecord.artist))
+
+        if (exIndex >= 0) // this exact DMCA record already exists
+        {
+            res.status(400).send(`This exact DMCA ${newRecord.type} record against ${newRecord.user} for ${newRecord.song} by ${newRecord.artist} already exists!`);
+        }
+        else if (exIndex < 0) // if this exact DMCA record does not already exist
+        {
+            ddata.push(newRecord); // add new DMCA record to the array
+            res.send(`Created DMCA ${newRecord.type} record against ${newRecord.user} for ${newRecord.song} by ${newRecord.artist}`);
+        }
+
+        setData(ddata, dfile); // send updated DMCA records array to JSON file
+    }
+    else if (sanitizeEmail(req.params.email))
+    {
+        res.status(400).send("Invalid input in request body!");
+    }
+    else if (sanitizeInput(req.body))
+    {
+        res.status(400).send("Invalid email!");
+    }
+    else 
+    {
+        res.status(400).send("Invalid email and request body!");
+    }
+})
 
 // BONUS ROUTES -------
 
@@ -1228,6 +1266,11 @@ arouter.get("/users", (req, res) => {
 // get all comments
 arouter.get("/comments", (req, res) => {
     res.send(getData(j4data)); // get up to date comment data and return it
+});
+
+// get all DMCA records
+arouter.get("/dmca", (req, res) => {
+    res.send(getData(j5data)); // get up to date DMCA record data and return it
 });
 
 app.use("/api/open", orouter); // install router object path for open routes

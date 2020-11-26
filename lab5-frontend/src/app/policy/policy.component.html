@@ -1,7 +1,9 @@
+<div class="section">
+
 <h3>View Web App Policies and Notices</h3>
 <button (click)="showPolicy()">Show / Hide Privacy Policy</button>
 <button (click)="showDMCA()">Show / Hide DMCA Notice</button>
-<p>Contact the site creator at aduffy22@uwo.ca for any questions</p>
+<p>Contact the site creator at aduffy22@uwo.ca for any questions or infringement concerns</p>
 
 <div *ngIf="pol" id="privacy-policy">
   <iframe src="https://docs.google.com/document/d/e/2PACX-1vQUwN669cYSYOCUqcXNToLvpvZXwxuD2-Ajhvha3u861EFXum8Bk8pvR8jPhC7AyxIpDR0VO9xZfk93/pub?embedded=true"></iframe>
@@ -9,6 +11,13 @@
 
 <div *ngIf="dmca" id="dmca">
   <iframe src="https://docs.google.com/document/d/e/2PACX-1vTrmI_5J6MreykAQC9PG7NFIE34PotHGbVkPuAjzdo--wmuFmq1psB63rWZqHR3hLmRjY_fQwMXeY1j/pub?embedded=true"></iframe>
+</div>
+
+<div *ngIf="ad" id="proc">
+  <button (click)="showProc()">Show / Hide DMCA Steps</button>
+  <div *ngIf="proc">
+    <iframe src="https://docs.google.com/document/d/e/2PACX-1vT55-5FRi5ftropi_r2KoGOhGRK8POYXJ-HRvs0LJHSdKZlwwtvE6GkcIgAUrcku5f-ILRTZmlOrmwI/pub?embedded=true"></iframe>
+  </div>
 </div>
 
 <div *ngIf="ad" id="privacy-policy-mod">
@@ -19,4 +28,31 @@
 <div *ngIf="ad" id="dmca-mod">
   <p>Click the following link to modify the DMCA notices</p>
   <a href="https://docs.google.com/document/d/1ASarYKBqu0ixr8AfiWTd5pmxZdK2hKCbdiJTeq2AzCI/edit?usp=sharing" target="_blank">Edit DMCA Notices</a>
+</div>
+
+</div>
+
+<div *ngIf="ad" class="section">
+
+  <h3>Log a DMCA Record</h3>
+  <input type="text" placeholder="User Email" [(ngModel)]="userEmail">
+  <input type="text" placeholder="Record Type" [(ngModel)]="rType">
+  <input type="text" placeholder="Song" [(ngModel)]="song">
+  <input type="text" placeholder="Artist" [(ngModel)]="artist">
+  <button (click)="createRecord()">Create Record</button>
+  <button (click)="displayRecords()">Show All Records</button>
+
+  <div *ngIf="error">
+    <p>{{error}}</p>
+  </div>
+
+  <div *ngIf="dData">
+    <p>Displaying all DMCA records</p>
+    <ul class="list">
+      <li *ngFor="let d of dData">
+        <span>User {{d.user}} has a record of a DMCA {{d.type}} filed on {{d.date}} pertaining to the use of {{d.song}} by {{d.artist}}</span>
+      </li>
+    </ul>
+  </div>
+
 </div>

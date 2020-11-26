@@ -1,0 +1,23 @@
+[
+    {
+        "user": "phobospuzzlegame@gmail.com",
+        "type": "request",
+        "date": "2020-11-25T00:43:13.501Z",
+        "song": "Ransom",
+        "artist": "Lil Tecca"
+    },
+    {
+        "user": "phobospuzzlegame@gmail.com",
+        "type": "notice",
+        "date": "2020-11-25T00:44:13.501Z",
+        "song": "Ransom",
+        "artist": "Lil Tecca"
+    },
+    {
+        "user": "phobospuzzlegame@gmail.com",
+        "type": "dispute",
+        "date": "2020-11-25T00:45:13.501Z",
+        "song": "Ransom",
+        "artist": "Lil Tecca"
+    }
+]

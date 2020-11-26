@@ -4,8 +4,8 @@
   <input type="text" placeholder="Schedule Name" [(ngModel)]="name">
   <input type="number" [(ngModel)]="count">
   <input type="text" placeholder="Description" [(ngModel)]="description">
-  <p>Check box to make schedule public</p>
-  <input type="checkbox" [(ngModel)]="vis" [ngModelOptions]="{standalone: true}">
+  <label for="tog">Check to make public</label>
+  <input type="checkbox" id="tog" [(ngModel)]="vis" [ngModelOptions]="{standalone: true}">
   <button (click)="buildSchedule()">Build</button>
 
   <div *ngIf="(build && name && (count >= 0) && (count <= 15))">
