@@ -58,4 +58,17 @@ export class Validator {
         return false;
     }
   }
+
+  // method to validate a string of a given maximum length
+  public validatePass(inp: string, len: number)
+  {
+    if ((typeof inp !== "string") || (inp.length == 0) || (inp.length > len) || (inp.includes("<")) || (inp.includes(">")) || (inp.includes("^")) || (inp.includes(".")) || (inp.includes("/")) || (inp.includes("(")) || (inp.includes(")")) || (inp.includes("*")) || (inp.includes("'"))  || (inp.includes("_")) || (inp.includes("=")) || (inp.includes("\"")) || (inp.includes("`")) || (inp.includes("+")))
+    {
+      return false;
+    }
+    else
+    {
+      return true;
+    }
+  }
 }

@@ -18,16 +18,16 @@
     {
         "name": "94aduffy",
         "password": "3p",
-        "active": false,
+        "active": true,
         "verified": false,
         "permission_level": "secure",
         "email": "94aduffy@gmail.com"
     },
     {
         "name": "Phobo",
-        "password": "newpass",
+        "password": "verysecure",
         "active": true,
-        "verified": false,
+        "verified": true,
         "permission_level": "secure",
         "email": "phobospuzzlegame@gmail.com"
     }

@@ -68,7 +68,7 @@ orouter.get("/users/:email", (req, res) => {
 // create an account POST
 orouter.post("/users/:email", (req, res) => {
 
-    if (sanitizeEmail(req.params.email) && sanitizeInput(req.body)) 
+    if (sanitizeEmail(req.params.email) && sanitizePass(req.body)) 
     {
         udata = getData(j3data); // get user account data
 
@@ -1050,11 +1050,53 @@ srouter.post("/comments/:subject/:course", (req, res) => {
     }
 });
 
-// change account password PUT
-srouter.put("/users/:email", (req, res) => {
+// change account username PUT
+srouter.put("/users/name/:email", (req, res) => {
     
     // send user object to file
-    if (sanitizeEmail(req.params.email) && sanitizeInput(req.body)) 
+    if (sanitizeEmail(req.params.email) && sanitizePass(req.body)) 
+    {
+        udata = getData(j3data); // get user account data
+
+        const exIndex = udata.findIndex(u => u.email === req.params.email); // find index of the exisitng user with the given email
+    
+        if (exIndex >= 0) // if the user exists
+        {
+            if (udata[exIndex].password === req.body.old_password)
+            {
+                if (udata[exIndex].name === req.body.name)
+                {
+                    res.status(400).send(`Cannot change username to your existing username for user with email: ${req.params.email}!`);
+                }
+                else
+                {
+                    udata[exIndex].name = req.body.name; // set username to the new username
+                    res.send(`Updated username for user with email: ${req.params.email}`);
+                }
+            }
+            else
+            {
+                res.status(400).send(`Incorrect password for user with email: ${req.params.email}!`);
+            }
+        }
+        else if (exIndex < 0) // if the user does not exist
+        {
+            res.status(400).send(`User with email: ${req.params.email} does not exist!`);
+        }
+
+        setData(udata, ufile); // send updated user data array to JSON file
+    }  
+    else
+    {
+        res.status(400).send("Invalid input!");
+    }
+});
+
+// change account password PUT
+srouter.put("/users/pass/:email", (req, res) => {
+    
+    // send user object to file
+    if (sanitizeEmail(req.params.email) && sanitizePass(req.body)) 
     {
         udata = getData(j3data); // get user account data
 
@@ -1327,3 +1369,17 @@ function sanitizeEmail(add)
         return false;
     }
 }
+
+// function for passwords
+function sanitizePass(input, l) 
+{ 
+    // variable character limit
+    if (String(input).includes("<") || String(input).includes(">") || String(input).includes("^") || String(input).includes(".") || String(input).includes("/") || String(input).includes("(") || String(input).includes(")") || String(input).includes("*") || String(input).includes("'") || String(input).includes("_") || String(input).includes("=") || String(input).includes("\"") || String(input).includes("`") || String(input).includes("+") || String(input).includes("|") || String(input).length > l || String(input).length < 1)
+    {
+        return false;
+    }
+    else
+    {
+        return true;
+    }
+};

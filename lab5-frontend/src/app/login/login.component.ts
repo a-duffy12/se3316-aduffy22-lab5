@@ -3,6 +3,7 @@ import { AuthService } from '@auth0/auth0-angular';
 import { DOCUMENT } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Validator } from '../validator.service';
+import { interval, Observable, Subscription } from 'rxjs';
 
 @Component({
   selector: 'login',
@@ -12,6 +13,9 @@ import { Validator } from '../validator.service';
 export class LoginComponent implements OnInit {
 
   // member fields for controlling state
+  subscription: Subscription;
+  activeUser: string = "";
+  done: number = 0;
   loggedIn: boolean = false;
   newUser: boolean = false;
   buildLogin: boolean = false;
@@ -19,12 +23,64 @@ export class LoginComponent implements OnInit {
   error: string = "";
 
   // memer fields to house user information
+  backData: any;
   savedProfile: any;
   userEmail: string = "";
   userPassword: string= "";
   userName: string = "";
+  newUserName: string = "";
+  newUserPassword: string = "";
+  exPassword: string = "";
 
-  constructor(@Inject(DOCUMENT) public document: Document, public auth: AuthService, private http: HttpClient, private val: Validator) { }
+  constructor(@Inject(DOCUMENT) public document: Document, public auth: AuthService, private http: HttpClient, private val: Validator) {
+
+    // every second, update the active user variable
+    this.subscription = interval(1000).subscribe(() => {
+      this.activeUser = this.val.getActiveUser();
+    });
+
+    // every second, check if the user logged in via Auth0
+    this.subscription = interval(1000).subscribe(() => {
+
+      if (this.auth.user$ && this.done == 0)
+      {
+        this.auth.user$.subscribe((profile) => {
+
+          this.http.get(`http://localhost:3000/api/open/users/${profile.email}`).subscribe((data:any) => {
+            this.savedProfile = data; // set returned data to the saved profile
+
+            if (this.savedProfile.email == profile.email)
+            {
+              if (!this.savedProfile.active) // if the user has been set to inactive
+              {
+                this.done = 1;
+                console.log(`User: ${profile.email} has been deactivated!`);
+                this.error = `User: ${profile.email} has been deactivated!`;
+                this.logout();
+                this.done = 0;
+              }
+              else
+              {
+                this.done = 1;
+                this.val.setActiveUser(String(profile.email)); // set active user
+                console.log(`Logging in user: ${profile.email}`);
+              }
+            }
+            else
+            {
+              this.done = 2;
+              console.log(`Need to register user: ${profile.email}`);
+            }
+          },
+          (error: any) => { // if the user does not exist
+            this.done = 2;
+            console.log(`Need to register user: ${profile.email}`);
+          })
+        })
+      }
+    });
+
+   }
 
   ngOnInit(): void {
   }
@@ -34,7 +90,7 @@ export class LoginComponent implements OnInit {
   {
     this.error = ""; // reset error message
 
-    if (this.userEmail && this.userPassword && this.val.validateEmail(this.userEmail))
+    if (this.userEmail && this.userPassword && this.val.validateEmail(this.userEmail) && this.val.validatePass(this.userPassword, 100))
     { // get request to see if the user already exists
       this.http.get(`http://localhost:3000/api/open/users/${this.userEmail}`).subscribe((data:any) => {
         this.savedProfile = data; // set returned data to the saved profile
@@ -65,12 +121,12 @@ export class LoginComponent implements OnInit {
         this.newUser = true;
       })
     }
-    else if (this.userEmail && this.userPassword && this.val.validate(this.userPassword, 20))
+    else if (this.userEmail && this.userPassword && this.val.validatePass(this.userPassword, 100))
     {
       this.error = "Please enter a valid email address!";
       console.log("Invalid input!");
     }
-    else if (this.userPassword && this.val.validate(this.userPassword, 20))
+    else if (this.userPassword && this.val.validatePass(this.userPassword, 100))
     {
       this.error = "Please enter an email address!";
       console.log("Invalid input!");
@@ -87,45 +143,12 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  // method to login via Auth0 // TODO
+  // method to login via Auth0
   loginA(): void
   {
     this.error = ""; // reset error message
 
     this.auth.loginWithRedirect();
-
-    if (this.auth.user$)
-    {
-      this.auth.user$.subscribe((profile) => {
-
-        this.http.get(`http://localhost:3000/api/open/users/${profile.email}`).subscribe((data:any) => {
-          this.savedProfile = data; // set returned data to the saved profile
-
-          if (this.savedProfile.email == profile.email)
-          {
-            if (!this.savedProfile.active) // if the user has been set to inactive
-            {
-              console.log(`User: ${profile.email} has been deactivated!`);
-              this.error = `User: ${profile.email} has been deactivated!`;
-              this.logout();
-            }
-            else
-            {
-              this.val.setActiveUser(String(profile.email)); // set active user
-            }
-          }
-          else
-          {
-            console.log(`Registering user: ${profile.email}`);
-            this.register();
-          }
-        },
-        (error: any) => { // if the user does not exist
-          console.log(`Registering user: ${profile.email}`);
-          this.register();
-        })
-      })
-    }
   }
 
   // method to logout via Auth0
@@ -135,6 +158,7 @@ export class LoginComponent implements OnInit {
     {
       this.auth.logout({ returnTo: this.document.location.origin }); // log out with auth0
       this.val.setActiveUser(""); // set active user to an empty string
+      this.done = 0;
     }
     else if (this.loggedIn)
     {
@@ -167,11 +191,12 @@ export class LoginComponent implements OnInit {
           console.log(data);
         })
       })
+      this.done = 0;
     }
     else if (this.newUser) // if the user is logged in locally
     {
 
-      if (this.userEmail && this.userPassword && this.userName && this.val.validateEmail(this.userEmail) && this.val.validate(this.userPassword, 20) && this.val.validate(this.userName, 20))
+      if (this.userEmail && this.userPassword && this.userName && this.val.validateEmail(this.userEmail) && this.val.validatePass(this.userPassword, 100) && this.val.validate(this.userName, 20))
       {
         // get request to see if the user already exists
         this.http.get(`http://localhost:3000/api/open/users/${this.userEmail}`).subscribe((data:any) => {
@@ -196,12 +221,12 @@ export class LoginComponent implements OnInit {
           this.newUser = false;
         })
       }
-      else if (this.userEmail && this.userPassword && this.userName && this.val.validate(this.userPassword, 20) && this.val.validate(this.userName, 20))
+      else if (this.userEmail && this.userPassword && this.userName && this.val.validatePass(this.userPassword, 100) && this.val.validate(this.userName, 20))
       {
         this.error = "Please enter a valid email address!";
         console.log("Invalid input!");
       }
-      else if (this.userPassword && this.userName && this.val.validate(this.userPassword, 20) && this.val.validate(this.userName, 20))
+      else if (this.userPassword && this.userName && this.val.validatePass(this.userPassword, 100) && this.val.validate(this.userName, 20))
       {
         this.error = "Please enter an email address!";
         console.log("Invalid input!");
@@ -219,9 +244,80 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  // method to reset membter fields in between uses
+  // update username
+  updateUsername()
+  {
+    this.reset(); // reset member variables
+
+    if (this.newUserName != "" && this.exPassword != "" && this.val.validate(this.newUserName, 20) && this.val.validatePass(this.exPassword, 100))
+    {
+      let obj = { // build request body
+        old_password: this.exPassword,
+        name: this.newUserName
+      }
+
+      // request to back end
+      this.http.put(`http://localhost:3000/api/secure/users/name/${this.activeUser}`, JSON.stringify(obj), reqHeader).subscribe((data:any) => {
+        this.backData = data; // get reponse from the back end
+      })
+      console.log(`Updated username of user: ${this.activeUser}`);
+    }
+    else if (this.newUserName != "" && this.val.validatePass(this.newUserName, 20))
+    {
+      this.error = "Invalid input for existing password field!";
+      console.log("Invalid input!");
+    }
+    else if (this.exPassword != "" && this.val.validatePass(this.exPassword, 100))
+    {
+      this.error = "Invalid input for new username field!";
+      console.log("Invalid input!");
+    }
+    else
+    {
+      this.error = "Invalid input for new uersname and existing password fields!";
+      console.log("INvalid input!");
+    }
+  }
+
+  // update password
+  updatePassword()
+  {
+    this.reset(); // reset member variables
+
+    if (this.newUserPassword != "" && this.exPassword != "" && this.val.validatePass(this.newUserPassword, 100) && this.val.validatePass(this.exPassword, 100))
+    {
+      let obj = { // build request body
+        old_password: this.exPassword,
+        password: this.newUserPassword
+      }
+
+      // request to back end
+      this.http.put(`http://localhost:3000/api/secure/users/pass/${this.activeUser}`, JSON.stringify(obj), reqHeader).subscribe((data:any) => {
+        this.backData = data; // get reponse from the back end
+      })
+      console.log(`Updated password of user: ${this.activeUser}`);
+    }
+    else if (this.newUserPassword != "" && this.val.validatePass(this.newUserPassword, 100))
+    {
+      this.error = "Invalid input for existing password field!";
+      console.log("Invalid input!");
+    }
+    else if (this.exPassword != "" && this.val.validatePass(this.exPassword, 100))
+    {
+      this.error = "Invalid input for new password field!";
+      console.log("Invalid input!");
+    }
+    else
+    {
+      this.error = "Invalid input for new password and existing password fields!";
+      console.log("INvalid input!");
+    }
+  }
+
+  // method to reset member fields in between uses
   reset()
   {
+    this.backData = undefined;
     this.userEmail = "";
     this.userPassword = "";
     this.userName = "";

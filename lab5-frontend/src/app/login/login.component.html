@@ -17,16 +17,26 @@
   <button (click)="loginA()">Login with Auth0</button>
 </div>
 
-<div *ngIf="auth.user$ | async as user">
-  <button (click)="register()">Register via Auth0</button>
-</div>
-
 <div *ngIf="newUser" class="section">
   <h3>Register as a New User</h3>
   <input type="text" placeholder="Email" [(ngModel)]="userEmail">
   <input type="text" placeholder="Password" [(ngModel)]="userPassword">
   <input type="text" placeholder="Username" [(ngModel)]="userName">
   <button (click)="register()">Register Locally</button>
+</div>
+
+<div *ngIf="done == 2">
+  <button (click)="register()">Register via Auth0</button>
+</div>
+
+<div *ngIf="activeUser" class="section">
+  <h3>Update Account Information</h3>
+  <input type="text" placeholder="New Username" [(ngModel)]="newUserName">
+  <input type="password" placeholder="Existing Password" [(ngModel)]="exPassword">
+  <button (click)="updateUsername()">Update Username</button>
+  <input type="password" placeholder="New Password" [(ngModel)]="newUserPassword">
+  <input type="password" placeholder="Existing Password" [(ngModel)]="exPassword">
+  <button (click)="updatePassword()">Update Password</button>
 </div>
 
 <div *ngIf="error">
