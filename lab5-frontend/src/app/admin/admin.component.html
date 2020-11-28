@@ -12,7 +12,7 @@
   <div *ngIf="gData">
     <p>Displaying all users</p>
     <ul class="list">
-      <li *ngFor="let g of gData">
+      <li *ngFor="let g of gData" class="list-li">
         <span>User {{g.email}} ({{g.name}}) is a(n) {{g.permission_level}} user, is active: {{g.active}}</span>
       </li>
     </ul>
@@ -36,7 +36,7 @@
   <div *ngIf="rData">
     <p>Displaying all reviews</p>
     <ul class="list">
-      <li *ngFor="let r of rData">
+      <li *ngFor="let r of rData" class="list-li">
         <span>Review of {{r.subject_code}}: {{r.course_code}} by {{r.creator}}, is hidden: {{r.hidden}}</span>
       </li>
     </ul>
@@ -58,7 +58,7 @@
   <div *ngIf="dData">
     <p>Displaying all users</p>
     <ul class="list">
-      <li *ngFor="let d of dData">
+      <li *ngFor="let d of dData" class="list-li">
         <span>User {{d.email}} ({{d.name}}) is a(n) {{d.permission_level}} user, is active: {{d.active}}</span>
       </li>
     </ul>

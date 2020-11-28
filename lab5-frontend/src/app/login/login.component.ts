@@ -219,6 +219,7 @@ export class LoginComponent implements OnInit {
 
           this.loggedIn = true;
           this.newUser = false;
+          this.val.setActiveUser(this.userEmail);
         })
       }
       else if (this.userEmail && this.userPassword && this.userName && this.val.validatePass(this.userPassword, 100) && this.val.validate(this.userName, 20))

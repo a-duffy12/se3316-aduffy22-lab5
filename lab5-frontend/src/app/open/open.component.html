@@ -16,8 +16,8 @@
     <p>Displaying search results</p>
     <button (click)="expandRes()">Expand</button>
     <ul class="list">
-      <li *ngFor="let c of courseData">
-        <span>{{c.subject_code}} - {{c.course_code}}: {{c.class_name}}</span>
+      <li *ngFor="let c of courseData" class="list-li">
+        <span>{{c.subject_code}} - {{c.course_code}}: {{c.class_name}}&nbsp;</span>
         <span>Class section: {{c.class_section}}, {{c.component}} component</span>
         <ul>
           <li *ngFor="let t of c.times">
@@ -31,18 +31,18 @@
   <div *ngIf="courseData && expand">
     <p>Displaying expanded search results</p>
     <ul class="list">
-      <li *ngFor="let c of courseData">
-        <span>{{c.subject_code}} - {{c.course_code}}: {{c.class_name}}</span>
+      <li *ngFor="let c of courseData" class="list-li">
+        <span>{{c.subject_code}} - {{c.course_code}}: {{c.class_name}}&nbsp;</span>
         <span>Class section: {{c.class_section}}, {{c.component}} component</span>
         <ul>
           <li *ngFor="let t of c.times">
             <span>Day: {{t.day}}, {{t.start}} - {{t.end}}</span>
           </li>
         </ul>
-        <span>Class number: {{c.class_number}}, Enrollment: {{c.enrollment}}</span>
-        <span>Campus: {{c.campus}}, Classroom: {{c.classroom}}</span>
-        <span>{{c.description}}</span>
-        <span>{{c.long_description}}</span>
+        <span>Class number: {{c.class_number}}, Enrollment: {{c.enrollment}}&nbsp;</span>
+        <span>Campus: {{c.campus}}, Classroom: {{c.classroom}}&nbsp;</span>
+        <span>{{c.description}}&nbsp;</span>
+        <span>{{c.long_description}}&nbsp;</span>
         <span>{{c.content}}</span>
         <ul class="review">
           <li *ngFor="let r of revData">
@@ -67,8 +67,8 @@
   <div *ngIf="scheData && !list">
     <p>Displaying a sample of public schedules</p>
     <ul class="list">
-      <li *ngFor="let s of scheData">
-        <span>Schedule: {{s.name}} by {{s.creator_name}}</span>
+      <li *ngFor="let s of scheData" class="list-li">
+        <span>Schedule: {{s.name}} by {{s.creator_name}}&nbsp;</span>
         <span>Last Modified: {{s.date_modified}}, contains {{s.course_count}} courses</span>
       </li>
     </ul>
@@ -78,8 +78,8 @@
   <div *ngIf="scheData && list && esData">
     <p>Displaying a sample of expanded public schedules</p>
     <ul class="list">
-      <li *ngFor="let e of esData">
-        <span>Schedule: {{e.name}} by {{e.creator_name}}</span>
+      <li *ngFor="let e of esData" class="list-li">
+        <span>Schedule: {{e.name}} by {{e.creator_name}}&nbsp;</span>
         <span>Description: {{e.description}}</span>
         <ul>
           <li *ngFor="let c of e.classes">
@@ -105,8 +105,8 @@
   <div *ngIf="timeData">
     <p>Timetable data for schedule: {{name}}</p>
     <ul class="list">
-      <li *ngFor="let t of timeData">
-        <span>Timetable data for {{t.subject_code}}: {{t.course_code}}</span>
+      <li *ngFor="let t of timeData" class="list-li">
+        <span>Timetable data for {{t.subject_code}}: {{t.course_code}}&nbsp;</span>
         <span>Class number: {{t.number}}, Component: {{t.component}}</span>
         <ul>
           <li *ngFor="let i of t.times">

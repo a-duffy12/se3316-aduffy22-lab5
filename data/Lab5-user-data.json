@@ -24,8 +24,8 @@
         "email": "94aduffy@gmail.com"
     },
     {
-        "name": "Phobo",
-        "password": "verysecure",
+        "name": "phobospuzzlegame",
+        "password": "3p",
         "active": true,
         "verified": true,
         "permission_level": "secure",
