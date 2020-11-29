@@ -98,24 +98,5 @@
         "date_modified": "2020-11-25T18:05:56.216Z",
         "infringing": false,
         "name": "1"
-    },
-    {
-        "classes": [
-            {
-                "subject_code": "BUSINESS",
-                "course_code": "2257"
-            },
-            {
-                "subject_code": "ENGSCI",
-                "course_code": "1050"
-            }
-        ],
-        "creator": "12aduffy@gmail.com",
-        "creator_name": "12aduffy",
-        "visibility": "public",
-        "description": " ",
-        "date_modified": "2020-11-29T17:04:53.136Z",
-        "infringing": false,
-        "name": "new"
     }
 ]
