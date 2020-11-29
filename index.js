@@ -1163,14 +1163,13 @@ srouter.put("/users/pass/:email", (req, res) => {
                             req.body.password = hash; // set new password to hashed value
                             udata[exIndex].password = req.body.password; // set password to the new password
                             res.send(`Updated password for user with email: ${req.params.email}`);
+                            setData(udata, ufile); // send updated user data array to JSON file
                         });  
                     }
                     else if (!result)
                     {
                         res.status(400).send(`Incorrect password for user with email: ${req.params.email}!`);
                     }
-    
-                    setData(udata, ufile); // send updated user data array to JSON file
                 });
             }
         }

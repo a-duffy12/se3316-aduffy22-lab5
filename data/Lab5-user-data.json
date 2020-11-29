@@ -2,7 +2,7 @@
     {
         "name": "Aiden",
         "email": "aduffy22@uwo.ca",
-        "password": "$2b$12$HUSOw4H5Ed2MJQ0kq4c9Yu5JRi3hUgMypS2sXE7UmwLzZAOS9ptNe",
+        "password": "$2b$12$6wCcHCtYu1cmvPD53a7Pl.kLH7SE5rXVATntH0Uq7hqEqGNEb0iNW",
         "active": true,
         "verified": true,
         "permission_level": "admin"
