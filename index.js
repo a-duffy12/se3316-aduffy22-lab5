@@ -2,6 +2,7 @@ const express = require("express"); // get express
 const fs = require("fs"); // get fs module
 const cors = require("cors"); // get cors module
 const stringSimilarity = require("string-similarity"); // get string similarity module
+const bcrypt = require("bcrypt"); // get hashing module
 
 const j1data = require("./data/Lab5-timetable-data.json"); // json data for courses
 const j2data = require("./data/Lab5-schedule-data.json"); // json data for schedules
@@ -14,6 +15,8 @@ const sfile = "./data/Lab5-schedule-data.json"; // file holding json data for sc
 const ufile = "./data/Lab5-user-data.json"; // file holding json data for users
 const rfile = "./data/Lab5-courses-comments-data.json"; // file holding data for course comments
 const dfile = "./data/Lab5-dmca-records-data.json"; // file holding data of DMCA records
+
+const salt = 12;
 
 const app = express(); // create app constant
 const orouter = express.Router(); // create router object for open routes
@@ -82,16 +85,54 @@ orouter.post("/users/:email", (req, res) => {
         {
             let newUser = req.body; // empty object for a new user
             newUser.email = req.params.email; // set email field for new user
-            udata.push(newUser); // add new user to array of users
-            res.send(`Created user account with email: ${req.params.email}`);
+            
+            bcrypt.hash(newUser.password, salt, (err, hash) => { // encrypt password
+                
+                newUser.password = hash; // set password to encrypted version
+                udata.push(newUser); // add new user to array of users
+                res.send(`Created user account with email: ${req.params.email}`);
+                setData(udata, ufile); // send updated user data array to JSON file
+            });
         }
-
-        setData(udata, ufile); // send updated user data array to JSON file
     }  
     else
     {
         res.status(400).send("Invalid input!");
     }
+});
+
+// log into an account POST
+orouter.post("/users/login/:email", (req, res) => {
+
+    if (sanitizeEmail(req.params.email) && sanitizePass(req.body)) 
+    {
+        udata = getData(j3data); // get user account data
+
+        const exIndex = udata.findIndex(u => u.email === req.params.email); // find index of the exisitng user with the given email
+    
+        if (exIndex >= 0) // if the user exists
+        {
+            bcrypt.compare(req.body.password, udata[exIndex].password, (err, result) => { // comapre the values of the two hashes
+
+                if (result) // password matches the saved one
+                {
+                    res.send(true);
+                }
+                else if (!result) // password does not match the saved one
+                {
+                    res.status(400).send(`Incorrect password for user with email: ${req.params.email}!`);
+                }
+            }); 
+        }
+        else if (exIndex < 0) // if the user does not exist
+        {
+            res.status(400).send(`User with email: ${req.params.email} does not exist!`);
+        }
+    }  
+    else
+    {
+        res.status(400).send("Invalid input!");
+    }    
 });
 
 // expanded search results for the above GET 3b/3c (differentiated on front end)
@@ -1058,33 +1099,36 @@ srouter.put("/users/name/:email", (req, res) => {
     {
         udata = getData(j3data); // get user account data
 
-        const exIndex = udata.findIndex(u => u.email === req.params.email); // find index of the exisitng user with the given email
+        const exIndex = udata.findIndex(u => u.email === req.params.email); // find index of the existing user with the given email
     
         if (exIndex >= 0) // if the user exists
         {
-            if (udata[exIndex].password === req.body.old_password)
-            {
-                if (udata[exIndex].name === req.body.name)
+            bcrypt.compare(req.body.password, udata[exIndex].password, (err, result) => { // comapre the values of the two hashes
+
+                if (result) // password matches the saved one
                 {
-                    res.status(400).send(`Cannot change username to your existing username for user with email: ${req.params.email}!`);
+                    if (udata[exIndex].name === req.body.name)
+                    {
+                        res.status(400).send(`Cannot change username to your existing username for user with email: ${req.params.email}!`);
+                    }
+                    else
+                    {
+                        udata[exIndex].name = req.body.name; // set username to the new username
+                        res.send(`Updated username for user with email: ${req.params.email}`);
+                    }
                 }
-                else
+                else if (!result) // password does not match the saved one
                 {
-                    udata[exIndex].name = req.body.name; // set username to the new username
-                    res.send(`Updated username for user with email: ${req.params.email}`);
+                    res.status(400).send(`Incorrect password for user with email: ${req.params.email}!`);
                 }
-            }
-            else
-            {
-                res.status(400).send(`Incorrect password for user with email: ${req.params.email}!`);
-            }
+
+                setData(udata, ufile); // send updated user data array to JSON file
+            }); 
         }
         else if (exIndex < 0) // if the user does not exist
         {
             res.status(400).send(`User with email: ${req.params.email} does not exist!`);
         }
-
-        setData(udata, ufile); // send updated user data array to JSON file
     }  
     else
     {
@@ -1104,29 +1148,36 @@ srouter.put("/users/pass/:email", (req, res) => {
     
         if (exIndex >= 0) // if the user exists
         {
-            if (udata[exIndex].password === req.body.old_password)
+            if (req.body.old_password === req.body.password)
             {
-                if (udata[exIndex].password === req.body.password)
-                {
-                    res.status(400).send(`Cannot change password to your existing password for user with email: ${req.params.email}!`);
-                }
-                else
-                {
-                    udata[exIndex].password = req.body.password; // set password to the new password
-                    res.send(`Updated password for user with email: ${req.params.email}`);
-                }
+                res.status(400).send(`Cannot change password to your existing password for user with email: ${req.params.email}!`);
             }
             else
             {
-                res.status(400).send(`Incorrect password for user with email: ${req.params.email}!`);
+                bcrypt.compare(req.body.old_password, udata[exIndex].password, (err, result) => { // check if the old password matches the accounts current password
+
+                    if (result)
+                    {
+                        bcrypt.hash(req.body.password, salt, (err, hash) => { // hash new password
+    
+                            req.body.password = hash; // set new password to hashed value
+                            udata[exIndex].password = req.body.password; // set password to the new password
+                            res.send(`Updated password for user with email: ${req.params.email}`);
+                        });  
+                    }
+                    else if (!result)
+                    {
+                        res.status(400).send(`Incorrect password for user with email: ${req.params.email}!`);
+                    }
+    
+                    setData(udata, ufile); // send updated user data array to JSON file
+                });
             }
         }
         else if (exIndex < 0) // if the user does not exist
         {
             res.status(400).send(`User with email: ${req.params.email} does not exist!`);
         }
-
-        setData(udata, ufile); // send updated user data array to JSON file
     }  
     else
     {
@@ -1315,6 +1366,13 @@ arouter.get("/dmca", (req, res) => {
     res.send(getData(j5data)); // get up to date DMCA record data and return it
 });
 
+// test hash value
+arouter.get("/testH/:password", (req, res) => {
+    bcrypt.hash(req.params.password, salt, (err, hash) => {
+        res.send(hash); // return the hashed value
+    })
+})
+
 app.use("/api/open", orouter); // install router object path for open routes
 app.use("/api/secure", srouter) // install router object path for secure routes
 app.use("/api/admin", arouter); // install router object path for admin routes
@@ -1383,3 +1441,4 @@ function sanitizePass(input, l)
         return true;
     }
 };
+

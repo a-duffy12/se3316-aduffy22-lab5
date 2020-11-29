@@ -95,25 +95,32 @@ export class LoginComponent implements OnInit {
       this.http.get(`http://localhost:3000/api/open/users/${this.userEmail}`).subscribe((data:any) => {
         this.savedProfile = data; // set returned data to the saved profile
 
-        if (this.savedProfile.password === this.userPassword) // make sure passwords match
-        {
-          if (!this.savedProfile.active) // if the user has been set to inactive
-          {
-            console.log(`User: ${this.userEmail} has been deactivated!`);
-            this.error = `User: ${this.userEmail} has been deactivated! Please contact a site administrator`;
-          }
-          else
-          {
-            console.log(`Logging in user: ${this.userEmail}`);
-            this.loggedIn = true; // allow log in
-            this.val.setActiveUser(this.userEmail); // set active user
-          }
+        let obj = { // build request body
+          password: this.userPassword
         }
-        else
-        {
+
+        // get request to see if passwords match
+        this.http.post(`http://localhost:3000/api/open/users/login/${this.userEmail}`, JSON.stringify(obj), reqHeader).subscribe((dataN:any) => {
+
+          if (data) // passwords do match
+          {
+            if (!this.savedProfile.active) // if the user has been set to inactive
+            {
+              console.log(`User: ${this.userEmail} has been deactivated!`);
+              this.error = `User: ${this.userEmail} has been deactivated! Please contact a site administrator`;
+            }
+            else
+            {
+              console.log(`Logging in user: ${this.userEmail}`);
+              this.loggedIn = true; // allow log in
+              this.val.setActiveUser(this.userEmail); // set active user
+            }
+          }
+        },
+        (error:any) => {
           this.error = "Incorrect password!";
           console.log("Incorrect password!");
-        }
+        })
       },
       (error: any) => { // if the user does not exist, then automatically register them
         console.log(`Unrecognized user: ${this.userEmail}`);
@@ -180,7 +187,7 @@ export class LoginComponent implements OnInit {
       this.auth.user$.subscribe((profile) => {
         let newUser: PostUser = { // create JSON to send to back end
           name: profile.nickname,
-          password: "3p",
+          password: "3pAuth0L0gin$",
           active: true,
           verified: profile.email_verified,
           permission_level: "secure"
@@ -253,7 +260,7 @@ export class LoginComponent implements OnInit {
     if (this.newUserName != "" && this.exPassword != "" && this.val.validate(this.newUserName, 20) && this.val.validatePass(this.exPassword, 100))
     {
       let obj = { // build request body
-        old_password: this.exPassword,
+        password: this.exPassword,
         name: this.newUserName
       }
 
