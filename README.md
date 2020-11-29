@@ -4,7 +4,9 @@ Followed [Auth0 tutorial](https://manage.auth0.com/dashboard/us/dev-7wim8ia3/app
 
 Followed [w3resource guide](https://www.w3resource.com/javascript/form/email-validation.php). Used this code to validate that any email recieved on the front end or the back end is in the proper email format.
 
-# Privacy-Policy
+Implemented [bcrypt](https://www.npmjs.com/package/bcrypt). Used this code to hash passwords and then authenticate them later on.
+
+# Privacy Policy
 
 Aiden Duffy has built this Western Schedule Creator web application as part of a course project for SE3316A Web Technologies. This service is provided at no cost and is intended for use as is.
 

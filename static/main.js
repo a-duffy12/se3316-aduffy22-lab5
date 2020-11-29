@@ -187,7 +187,7 @@ class PolicyComponent {
             this.activeUser = this.val.getActiveUser();
             if (this.activeUser) {
                 // check to see if this user is an admin
-                this.http.get(`http://localhost:3000/api/open/users/${this.activeUser}`).subscribe((data) => {
+                this.http.get(`/api/open/users/${this.activeUser}`).subscribe((data) => {
                     if (data.permission_level === "admin") // if user is an admin
                      {
                         this.ad = true; // reveal admin level content
@@ -200,7 +200,7 @@ class PolicyComponent {
             }
         });
         // request to the back end
-        this.http.get(`http://localhost:3000/api/admin/users`).subscribe((data) => {
+        this.http.get(`/api/admin/users`).subscribe((data) => {
             this.uData = data; // get data obejct from the back end
         });
     }
@@ -255,7 +255,7 @@ class PolicyComponent {
                     artist: this.artist
                 };
                 // request to back end
-                this.http.post(`http://localhost:3000/api/admin/dmca/${this.userEmail}`, JSON.stringify(obj), reqHeader).subscribe((data) => {
+                this.http.post(`/api/admin/dmca/${this.userEmail}`, JSON.stringify(obj), reqHeader).subscribe((data) => {
                     this.dData = data; // get back end data object
                 });
                 console.log(`Created DMCA ${this.rType} record for ${this.userEmail} in regards to ${this.song} by ${this.artist}`);
@@ -285,7 +285,7 @@ class PolicyComponent {
     displayRecords() {
         this.reset(); // reset all member variables
         // request to the back end
-        this.http.get(`http://localhost:3000/api/admin/dmca`).subscribe((data) => {
+        this.http.get(`/api/admin/dmca`).subscribe((data) => {
             this.dData = data; // get data obejct from the back end
         });
     }
@@ -651,7 +651,7 @@ class SecureComponent {
             this.activeUser = this.val.getActiveUser();
         });
         // get all courses to check for course validity
-        this.http.get("http://localhost:3000/api/admin/courses").subscribe((data) => {
+        this.http.get("/api/admin/courses").subscribe((data) => {
             this.cdata = data;
         });
     }
@@ -697,7 +697,7 @@ class SecureComponent {
         this.reset(); // reset all member variables
         if (this.cdata && (this.name != "") && this.val.validate(this.name, 100) && this.val.validate(this.description, 200) && this.val.validateNum(this.count, 0, 15)) {
             // back end request to get username
-            this.http.get(`http://localhost:3000/api/open/users/${this.activeUser}`).subscribe((data) => {
+            this.http.get(`/api/open/users/${this.activeUser}`).subscribe((data) => {
                 if (this.vis) // user wants their schedule to be visible
                  {
                     this.visibility = "public";
@@ -770,7 +770,7 @@ class SecureComponent {
                 if (this.clear == true) // no illegal courses were found
                  {
                     // send request with schedule "obj" in the body and "name" in the URL
-                    this.http.post(`http://localhost:3000/api/secure/schedules/${this.name}`, JSON.stringify(obj), reqHeader).subscribe((data) => {
+                    this.http.post(`/api/secure/schedules/${this.name}`, JSON.stringify(obj), reqHeader).subscribe((data) => {
                         this.backData = data; // get response as string
                     });
                     console.log(`Created schedule with name: ${this.name}`);
@@ -814,7 +814,7 @@ class SecureComponent {
         this.reset(); // reset all member variables
         if (this.cdata && (this.name != "") && this.val.validate(this.name, 100) && this.val.validate(this.description, 200) && this.val.validateNum(this.count, 0, 15)) {
             // back end request to get username
-            this.http.get(`http://localhost:3000/api/open/users/${this.activeUser}`).subscribe((data) => {
+            this.http.get(`/api/open/users/${this.activeUser}`).subscribe((data) => {
                 if (this.vis) // user wants their schedule to be visible
                  {
                     this.visibility = "public";
@@ -887,7 +887,7 @@ class SecureComponent {
                 if (this.clear == true) // no illegal courses were found
                  {
                     // send request with schedule "obj" in the body and "name" in the URL
-                    this.http.put(`http://localhost:3000/api/secure/schedules/${this.name}`, JSON.stringify(obj), reqHeader).subscribe((data) => {
+                    this.http.put(`/api/secure/schedules/${this.name}`, JSON.stringify(obj), reqHeader).subscribe((data) => {
                         this.backData = data; // get response as string
                     });
                     console.log(`Updated schedule with name: ${this.name}`);
@@ -947,7 +947,7 @@ class SecureComponent {
                     }),
                     body: JSON.stringify(obj)
                 };
-                this.http.delete(`http://localhost:3000/api/secure/schedules/${this.dname}`, reqH).subscribe((data) => {
+                this.http.delete(`/api/secure/schedules/${this.dname}`, reqH).subscribe((data) => {
                     this.backData = data; // get response as string
                 });
                 console.log(`Deleted schedule with name: ${this.dname}`);
@@ -974,7 +974,7 @@ class SecureComponent {
         if (this.rev && this.view.toLocaleLowerCase() == "yes") {
             if (this.subject != "" && this.course != "" && this.comment != "" && this.val.validate(this.subject, 8) && this.val.validate(this.course, 5) && this.val.validate(this.comment, 1000)) {
                 // back end request to get username
-                this.http.get(`http://localhost:3000/api/open/users/${this.activeUser}`).subscribe((data) => {
+                this.http.get(`/api/open/users/${this.activeUser}`).subscribe((data) => {
                     // create empty review object
                     let obj = {
                         creator: this.activeUser,
@@ -1009,7 +1009,7 @@ class SecureComponent {
                     if (found == true) // the requested course exists
                      {
                         // request to send review to back end
-                        this.http.post(`http://localhost:3000/api/secure/comments/${this.subject.toUpperCase()}/${this.course.toUpperCase()}`, JSON.stringify(obj), reqHeader).subscribe((data) => {
+                        this.http.post(`/api/secure/comments/${this.subject.toUpperCase()}/${this.course.toUpperCase()}`, JSON.stringify(obj), reqHeader).subscribe((data) => {
                             this.backData = data; // get response from back end
                         });
                         console.log(`Created review for ${this.subject.toUpperCase()}: ${this.course.toUpperCase()}`);
@@ -1414,7 +1414,7 @@ class AdminComponent {
             this.activeUser = this.val.getActiveUser();
             if (this.activeUser) {
                 // check to see if this user is an admin
-                this.http.get(`http://localhost:3000/api/open/users/${this.activeUser}`).subscribe((data) => {
+                this.http.get(`/api/open/users/${this.activeUser}`).subscribe((data) => {
                     if (data.permission_level === "admin") // if user is an admin
                      {
                         this.ad = true; // reveal admin level content
@@ -1438,7 +1438,7 @@ class AdminComponent {
                 adds: this.addUser
             };
             // request to back end
-            this.http.put(`http://localhost:3000/api/admin/users/ad/${this.addUser}`, JSON.stringify(obj), reqHeader).subscribe((data) => {
+            this.http.put(`/api/admin/users/ad/${this.addUser}`, JSON.stringify(obj), reqHeader).subscribe((data) => {
                 this.gData = data; // get response
             });
             console.log(`Gave admin privileges to user: ${this.addUser}`);
@@ -1452,7 +1452,7 @@ class AdminComponent {
     displayUsersA() {
         this.reset(); // reset all member variables
         // request to the back end
-        this.http.get(`http://localhost:3000/api/admin/users`).subscribe((data) => {
+        this.http.get(`/api/admin/users`).subscribe((data) => {
             this.gData = data; // get data obejct from the back end
         });
     }
@@ -1465,7 +1465,7 @@ class AdminComponent {
                 adds: this.addUser
             };
             // request to back end
-            this.http.put(`http://localhost:3000/api/admin/comments/${this.subject.toUpperCase()}/${this.course.toUpperCase()}/${this.userEmail}`, JSON.stringify(obj), reqHeader).subscribe((data) => {
+            this.http.put(`/api/admin/comments/${this.subject.toUpperCase()}/${this.course.toUpperCase()}/${this.userEmail}`, JSON.stringify(obj), reqHeader).subscribe((data) => {
                 this.rData = data; // get response from the back end
             });
             console.log(`Toggled visiblity for review of ${this.subject.toUpperCase()}: ${this.course.toUpperCase()} by ${this.userEmail}`);
@@ -1503,7 +1503,7 @@ class AdminComponent {
     displayReviews() {
         this.reset(); // reset all member variables
         // request to the back end
-        this.http.get(`http://localhost:3000/api/admin/comments`).subscribe((data) => {
+        this.http.get(`/api/admin/comments`).subscribe((data) => {
             this.rData = data; // get data obejct from the back end
         });
     }
@@ -1516,7 +1516,7 @@ class AdminComponent {
                 adds: this.deUser
             };
             // request to back end
-            this.http.put(`http://localhost:3000/api/admin/users/de/${this.deUser}`, JSON.stringify(obj), reqHeader).subscribe((data) => {
+            this.http.put(`/api/admin/users/de/${this.deUser}`, JSON.stringify(obj), reqHeader).subscribe((data) => {
                 this.dData = data; // get response
             });
             console.log(`Gave admin privileges to user: ${this.deUser}`);
@@ -1530,7 +1530,7 @@ class AdminComponent {
     displayUsersB() {
         this.reset(); // reset all member variables
         // request to the back end
-        this.http.get(`http://localhost:3000/api/admin/users`).subscribe((data) => {
+        this.http.get(`/api/admin/users`).subscribe((data) => {
             this.dData = data; // get data obejct from the back end
         });
     }
@@ -2026,56 +2026,56 @@ class OpenComponent {
         this.catalog = this.catalog.toUpperCase();
         if ((this.subject == "") && (this.numb == "") && (this.catalog == "")) {
             // request to back end
-            this.http.get(`http://localhost:3000/api/open/courses`).subscribe((data) => {
+            this.http.get(`/api/open/courses`).subscribe((data) => {
                 this.courseData = data; // get back end data object
             });
             console.log("Searched all courses");
         }
         else if ((this.subject != "") && (this.numb == "") && (this.catalog == "") && this.val.validate(this.subject, 8)) {
             // request to back end
-            this.http.get(`http://localhost:3000/api/open/courses/?subject=${this.subject}`).subscribe((data) => {
+            this.http.get(`/api/open/courses/?subject=${this.subject}`).subscribe((data) => {
                 this.courseData = data; // get back end data object
             });
             console.log(`Searched all courses with subject: ${this.subject}`);
         }
         else if ((this.subject == "") && (this.numb != "") && (this.catalog == "") && this.val.validate(this.numb, 4)) {
             // request to back end
-            this.http.get(`http://localhost:3000/api/open/courses/?courseNum=${this.numb}`).subscribe((data) => {
+            this.http.get(`/api/open/courses/?courseNum=${this.numb}`).subscribe((data) => {
                 this.courseData = data; // get back end data object
             });
             console.log(`Searched all courses with course number: ${this.numb}`);
         }
         else if ((this.subject == "") && (this.numb == "") && (this.catalog != "") && this.val.validate(this.catalog, 5)) {
             // request to back end
-            this.http.get(`http://localhost:3000/api/open/courses/?catalog=${this.catalog}`).subscribe((data) => {
+            this.http.get(`/api/open/courses/?catalog=${this.catalog}`).subscribe((data) => {
                 this.courseData = data; // get back end data object
             });
             console.log(`Searched all courses with catalog number: ${this.catalog}`);
         }
         else if ((this.subject != "") && (this.numb != "") && (this.catalog == "") && this.val.validate(this.subject, 8) && this.val.validate(this.numb, 4)) {
             // request to back end
-            this.http.get(`http://localhost:3000/api/open/courses/?subject=${this.subject}&courseNum=${this.numb}`).subscribe((data) => {
+            this.http.get(`/api/open/courses/?subject=${this.subject}&courseNum=${this.numb}`).subscribe((data) => {
                 this.courseData = data; // get back end data object
             });
             console.log(`Searched all courses with subject: ${this.subject} and course number: ${this.numb}`);
         }
         else if ((this.subject != "") && (this.numb == "") && (this.catalog != "") && this.val.validate(this.subject, 8) && this.val.validate(this.catalog, 5)) {
             // request to back end
-            this.http.get(`http://localhost:3000/api/open/courses/?subject=${this.subject}&catalog=${this.catalog}`).subscribe((data) => {
+            this.http.get(`/api/open/courses/?subject=${this.subject}&catalog=${this.catalog}`).subscribe((data) => {
                 this.courseData = data; // get back end data object
             });
             console.log(`Searched all courses with subject: ${this.subject} and catalog number: ${this.catalog}`);
         }
         else if ((this.subject == "") && (this.numb != "") && (this.catalog != "") && this.val.validate(this.numb, 4) && this.val.validate(this.catalog, 5)) {
             // request to back end
-            this.http.get(`http://localhost:3000/api/open/courses/?courseNum=${this.numb}&catalog=${this.catalog}`).subscribe((data) => {
+            this.http.get(`/api/open/courses/?courseNum=${this.numb}&catalog=${this.catalog}`).subscribe((data) => {
                 this.courseData = data; // get back end data object
             });
             console.log(`Searched all courses with course number: ${this.numb} and catalog number: ${this.catalog}`);
         }
         else if ((this.subject != "") && (this.numb != "") && (this.catalog != "") && this.val.validate(this.subject, 8) && this.val.validate(this.numb, 4) && this.val.validate(this.catalog, 5)) {
             // request to back end
-            this.http.get(`http://localhost:3000/api/open/courses/?subject=${this.subject}&courseNum=${this.numb}&catalog=${this.catalog}`).subscribe((data) => {
+            this.http.get(`/api/open/courses/?subject=${this.subject}&courseNum=${this.numb}&catalog=${this.catalog}`).subscribe((data) => {
                 this.courseData = data; // get back end data object
             });
             console.log(`Searched all courses with subject: ${this.subject}, course number: ${this.numb}, and catalog number: ${this.catalog}`);
@@ -2090,7 +2090,7 @@ class OpenComponent {
         this.reset(); // reset all back end result variables
         this.keyword = this.keyword.toUpperCase(); // all fields keyword is matched to are upper case
         if ((this.keyword != "") && this.val.validate(this.keyword, 100)) {
-            this.http.get(`http://localhost:3000/api/open/key/${this.keyword}`).subscribe((data) => {
+            this.http.get(`/api/open/key/${this.keyword}`).subscribe((data) => {
                 this.courseData = data; // get back end data object
             });
             console.log(`Searched for courses using keyword: ${this.keyword}`);
@@ -2103,7 +2103,7 @@ class OpenComponent {
     // method to display up to 10 public schedules
     displaySchedules() {
         this.reset(); // reset all back end result variables
-        this.http.get(`http://localhost:3000/api/open/schedules`).subscribe((data) => {
+        this.http.get(`/api/open/schedules`).subscribe((data) => {
             this.scheData = data.sort((a, b) => a.date_modified - b.date_modified); // get back end data object sorted by date modified
         });
         console.log(`Get up to 10 public schedules`);
@@ -2111,7 +2111,7 @@ class OpenComponent {
     // method to show all course details
     expandRes() {
         // request for all existing reviews
-        this.http.get(`http://localhost:3000/api/admin/comments`).subscribe((data) => {
+        this.http.get(`/api/admin/comments`).subscribe((data) => {
             this.allRevData = data; // get all reviews as an object
             for (let c in this.courseData) // for all courses returned in the search
              {
@@ -2129,10 +2129,10 @@ class OpenComponent {
     // method to list schedule details
     listRes() {
         // get a list of all public schedules
-        this.http.get(`http://localhost:3000/api/open/schedules`).subscribe((data) => {
+        this.http.get(`/api/open/schedules`).subscribe((data) => {
             for (let d in data) // for each of the schedules
              {
-                this.http.get(`http://localhost:3000/api/open/schedules/${data[d].name}`).subscribe((dataN) => {
+                this.http.get(`/api/open/schedules/${data[d].name}`).subscribe((dataN) => {
                     this.esData.push(dataN); // get expanded data object of that schedule
                 });
             }
@@ -2145,7 +2145,7 @@ class OpenComponent {
         this.reset(); // reset all member variables
         if ((this.name != "") && this.val.validate(this.name, 100)) {
             // request to back end
-            this.http.get(`http://localhost:3000/api/open/schedules/full/${this.name}`).subscribe((data) => {
+            this.http.get(`/api/open/schedules/full/${this.name}`).subscribe((data) => {
                 this.timeData = data; // get back end data object
             });
             console.log(`Searched for timetable data from schedule: ${this.name}`);
@@ -2480,7 +2480,7 @@ class LoginComponent {
         this.subscription = Object(rxjs__WEBPACK_IMPORTED_MODULE_3__["interval"])(1000).subscribe(() => {
             if (this.auth.user$ && this.done == 0) {
                 this.auth.user$.subscribe((profile) => {
-                    this.http.get(`http://localhost:3000/api/open/users/${profile.email}`).subscribe((data) => {
+                    this.http.get(`/api/open/users/${profile.email}`).subscribe((data) => {
                         this.savedProfile = data; // set returned data to the saved profile
                         if (this.savedProfile.email == profile.email) {
                             if (!this.savedProfile.active) // if the user has been set to inactive
@@ -2515,25 +2515,30 @@ class LoginComponent {
     login() {
         this.error = ""; // reset error message
         if (this.userEmail && this.userPassword && this.val.validateEmail(this.userEmail) && this.val.validatePass(this.userPassword, 100)) { // get request to see if the user already exists
-            this.http.get(`http://localhost:3000/api/open/users/${this.userEmail}`).subscribe((data) => {
+            this.http.get(`/api/open/users/${this.userEmail}`).subscribe((data) => {
                 this.savedProfile = data; // set returned data to the saved profile
-                if (this.savedProfile.password === this.userPassword) // make sure passwords match
-                 {
-                    if (!this.savedProfile.active) // if the user has been set to inactive
+                let obj = {
+                    password: this.userPassword
+                };
+                // get request to see if passwords match
+                this.http.post(`/api/open/users/login/${this.userEmail}`, JSON.stringify(obj), reqHeader).subscribe((dataN) => {
+                    if (data) // passwords do match
                      {
-                        console.log(`User: ${this.userEmail} has been deactivated!`);
-                        this.error = `User: ${this.userEmail} has been deactivated! Please contact a site administrator`;
+                        if (!this.savedProfile.active) // if the user has been set to inactive
+                         {
+                            console.log(`User: ${this.userEmail} has been deactivated!`);
+                            this.error = `User: ${this.userEmail} has been deactivated! Please contact a site administrator`;
+                        }
+                        else {
+                            console.log(`Logging in user: ${this.userEmail}`);
+                            this.loggedIn = true; // allow log in
+                            this.val.setActiveUser(this.userEmail); // set active user
+                        }
                     }
-                    else {
-                        console.log(`Logging in user: ${this.userEmail}`);
-                        this.loggedIn = true; // allow log in
-                        this.val.setActiveUser(this.userEmail); // set active user
-                    }
-                }
-                else {
+                }, (error) => {
                     this.error = "Incorrect password!";
                     console.log("Incorrect password!");
-                }
+                });
             }, (error) => {
                 console.log(`Unrecognized user: ${this.userEmail}`);
                 this.error = "Unrecognized user, please register!";
@@ -2585,13 +2590,13 @@ class LoginComponent {
             this.auth.user$.subscribe((profile) => {
                 let newUser = {
                     name: profile.nickname,
-                    password: "3p",
+                    password: "3pAuth0L0gin$",
                     active: true,
                     verified: profile.email_verified,
                     permission_level: "secure"
                 };
                 // send new user data to back end
-                this.http.post(`http://localhost:3000/api/open/users/${profile.email}`, JSON.stringify(newUser), reqHeader).subscribe((data) => {
+                this.http.post(`/api/open/users/${profile.email}`, JSON.stringify(newUser), reqHeader).subscribe((data) => {
                     console.log(`Created user: ${profile.email}`);
                     console.log(data);
                 });
@@ -2602,7 +2607,7 @@ class LoginComponent {
          {
             if (this.userEmail && this.userPassword && this.userName && this.val.validateEmail(this.userEmail) && this.val.validatePass(this.userPassword, 100) && this.val.validate(this.userName, 20)) {
                 // get request to see if the user already exists
-                this.http.get(`http://localhost:3000/api/open/users/${this.userEmail}`).subscribe((data) => {
+                this.http.get(`/api/open/users/${this.userEmail}`).subscribe((data) => {
                     this.error = `Cannot create a new account for existing user: ${data.email}`;
                 }, (error) => {
                     let user = {
@@ -2613,7 +2618,7 @@ class LoginComponent {
                         permission_level: "secure"
                     };
                     // send new user data to back end
-                    this.http.post(`http://localhost:3000/api/open/users/${this.userEmail}`, JSON.stringify(user), reqHeader).subscribe((data) => {
+                    this.http.post(`/api/open/users/${this.userEmail}`, JSON.stringify(user), reqHeader).subscribe((data) => {
                         console.log(`Created user: ${this.userEmail}`);
                         console.log(data);
                     });
@@ -2645,11 +2650,11 @@ class LoginComponent {
         this.reset(); // reset member variables
         if (this.newUserName != "" && this.exPassword != "" && this.val.validate(this.newUserName, 20) && this.val.validatePass(this.exPassword, 100)) {
             let obj = {
-                old_password: this.exPassword,
+                password: this.exPassword,
                 name: this.newUserName
             };
             // request to back end
-            this.http.put(`http://localhost:3000/api/secure/users/name/${this.activeUser}`, JSON.stringify(obj), reqHeader).subscribe((data) => {
+            this.http.put(`/api/secure/users/name/${this.activeUser}`, JSON.stringify(obj), reqHeader).subscribe((data) => {
                 this.backData = data; // get reponse from the back end
             });
             console.log(`Updated username of user: ${this.activeUser}`);
@@ -2676,7 +2681,7 @@ class LoginComponent {
                 password: this.newUserPassword
             };
             // request to back end
-            this.http.put(`http://localhost:3000/api/secure/users/pass/${this.activeUser}`, JSON.stringify(obj), reqHeader).subscribe((data) => {
+            this.http.put(`/api/secure/users/pass/${this.activeUser}`, JSON.stringify(obj), reqHeader).subscribe((data) => {
                 this.backData = data; // get reponse from the back end
             });
             console.log(`Updated password of user: ${this.activeUser}`);
