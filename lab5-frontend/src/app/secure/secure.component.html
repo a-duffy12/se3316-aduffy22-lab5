@@ -9,7 +9,7 @@
   <button (click)="buildSchedule()">Build</button>
 
   <div *ngIf="(build && name && (count >= 0) && (count <= 15))">
-    <p *ngIf="count > 0">Enter subject and course code pairs</p>
+    <p *ngIf="count > 0" class="buil">Enter subject and course code pairs</p>
     <ul class="list">
       <li *ngFor="let item of [].constructor(count); let i = index">
         <input type="text" placeholder="Subject" [(ngModel)]="subjectCodes[i]">
