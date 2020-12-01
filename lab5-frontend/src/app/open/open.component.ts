@@ -47,7 +47,7 @@ export class OpenComponent implements OnInit {
     if ((this.subject == "") && (this.numb == "") && (this.catalog == ""))
     {
       // request to back end
-      this.http.get(`http://localhost:3000/api/open/courses`).subscribe((data:any) => {
+      this.http.get(`/api/open/courses`).subscribe((data:any) => {
         this.courseData = data; // get back end data object
       })
       console.log("Searched all courses");
@@ -55,7 +55,7 @@ export class OpenComponent implements OnInit {
     else if ((this.subject != "") && (this.numb == "") && (this.catalog == "") && this.val.validate(this.subject, 8))
     {
       // request to back end
-      this.http.get(`http://localhost:3000/api/open/courses/?subject=${this.subject}`).subscribe((data:any) => {
+      this.http.get(`/api/open/courses/?subject=${this.subject}`).subscribe((data:any) => {
         this.courseData = data; // get back end data object
       })
       console.log(`Searched all courses with subject: ${this.subject}`);
@@ -63,7 +63,7 @@ export class OpenComponent implements OnInit {
     else if ((this.subject == "") && (this.numb != "") && (this.catalog == "") && this.val.validate(this.numb, 4))
     {
       // request to back end
-      this.http.get(`http://localhost:3000/api/open/courses/?courseNum=${this.numb}`).subscribe((data:any) => {
+      this.http.get(`/api/open/courses/?courseNum=${this.numb}`).subscribe((data:any) => {
         this.courseData = data; // get back end data object
       })
       console.log(`Searched all courses with course number: ${this.numb}`);
@@ -71,7 +71,7 @@ export class OpenComponent implements OnInit {
     else if ((this.subject == "") && (this.numb == "") && (this.catalog != "") && this.val.validate(this.catalog, 5))
     {
       // request to back end
-      this.http.get(`http://localhost:3000/api/open/courses/?catalog=${this.catalog}`).subscribe((data:any) => {
+      this.http.get(`/api/open/courses/?catalog=${this.catalog}`).subscribe((data:any) => {
         this.courseData = data; // get back end data object
       })
       console.log(`Searched all courses with catalog number: ${this.catalog}`);
@@ -79,7 +79,7 @@ export class OpenComponent implements OnInit {
     else if ((this.subject != "") && (this.numb != "") && (this.catalog == "") && this.val.validate(this.subject, 8) && this.val.validate(this.numb, 4))
     {
       // request to back end
-      this.http.get(`http://localhost:3000/api/open/courses/?subject=${this.subject}&courseNum=${this.numb}`).subscribe((data:any) => {
+      this.http.get(`/api/open/courses/?subject=${this.subject}&courseNum=${this.numb}`).subscribe((data:any) => {
         this.courseData = data; // get back end data object
       })
       console.log(`Searched all courses with subject: ${this.subject} and course number: ${this.numb}`);
@@ -87,7 +87,7 @@ export class OpenComponent implements OnInit {
     else if ((this.subject != "") && (this.numb == "") && (this.catalog != "") && this.val.validate(this.subject, 8) && this.val.validate(this.catalog, 5))
     {
       // request to back end
-      this.http.get(`http://localhost:3000/api/open/courses/?subject=${this.subject}&catalog=${this.catalog}`).subscribe((data:any) => {
+      this.http.get(`/api/open/courses/?subject=${this.subject}&catalog=${this.catalog}`).subscribe((data:any) => {
         this.courseData = data; // get back end data object
       })
       console.log(`Searched all courses with subject: ${this.subject} and catalog number: ${this.catalog}`);
@@ -95,7 +95,7 @@ export class OpenComponent implements OnInit {
     else if ((this.subject == "") && (this.numb != "") && (this.catalog != "") && this.val.validate(this.numb, 4) && this.val.validate(this.catalog, 5))
     {
       // request to back end
-      this.http.get(`http://localhost:3000/api/open/courses/?courseNum=${this.numb}&catalog=${this.catalog}`).subscribe((data:any) => {
+      this.http.get(`/api/open/courses/?courseNum=${this.numb}&catalog=${this.catalog}`).subscribe((data:any) => {
         this.courseData = data; // get back end data object
       })
       console.log(`Searched all courses with course number: ${this.numb} and catalog number: ${this.catalog}`);
@@ -103,7 +103,7 @@ export class OpenComponent implements OnInit {
     else if ((this.subject != "") && (this.numb != "") && (this.catalog != "") && this.val.validate(this.subject, 8) && this.val.validate(this.numb, 4) && this.val.validate(this.catalog, 5))
     {
       // request to back end
-      this.http.get(`http://localhost:3000/api/open/courses/?subject=${this.subject}&courseNum=${this.numb}&catalog=${this.catalog}`).subscribe((data:any) => {
+      this.http.get(`/api/open/courses/?subject=${this.subject}&courseNum=${this.numb}&catalog=${this.catalog}`).subscribe((data:any) => {
         this.courseData = data; // get back end data object
       })
       console.log(`Searched all courses with subject: ${this.subject}, course number: ${this.numb}, and catalog number: ${this.catalog}`);
@@ -124,7 +124,7 @@ export class OpenComponent implements OnInit {
 
     if ((this.keyword != "") && this.val.validate(this.keyword, 100))
     {
-      this.http.get(`http://localhost:3000/api/open/key/${this.keyword}`).subscribe((data:any) => {
+      this.http.get(`/api/open/key/${this.keyword}`).subscribe((data:any) => {
         this.courseData = data; // get back end data object
       })
       console.log(`Searched for courses using keyword: ${this.keyword}`);
@@ -141,7 +141,7 @@ export class OpenComponent implements OnInit {
   {
     this.reset(); // reset all back end result variables
 
-    this.http.get(`http://localhost:3000/api/open/schedules`).subscribe((data:any) => {
+    this.http.get(`/api/open/schedules`).subscribe((data:any) => {
       this.scheData = data.sort((a: any, b: any) => a.date_modified - b.date_modified); // get back end data object sorted by date modified
     })
     console.log(`Get up to 10 public schedules`);
@@ -151,7 +151,7 @@ export class OpenComponent implements OnInit {
   expandRes()
   {
     // request for all existing reviews
-    this.http.get(`http://localhost:3000/api/admin/comments`).subscribe((data:any) => {
+    this.http.get(`/api/admin/comments`).subscribe((data:any) => {
       this.allRevData = data; // get all reviews as an object
 
       for (let c in this.courseData) // for all courses returned in the search
@@ -173,11 +173,11 @@ export class OpenComponent implements OnInit {
   listRes()
   {
     // get a list of all public schedules
-    this.http.get(`http://localhost:3000/api/open/schedules`).subscribe((data:any) => {
+    this.http.get(`/api/open/schedules`).subscribe((data:any) => {
 
       for (let d in data) // for each of the schedules
       {
-        this.http.get(`http://localhost:3000/api/open/schedules/${data[d].name}`).subscribe((dataN:any) => {
+        this.http.get(`/api/open/schedules/${data[d].name}`).subscribe((dataN:any) => {
           this.esData.push(dataN); // get expanded data object of that schedule
         })
       }
@@ -195,7 +195,7 @@ export class OpenComponent implements OnInit {
     if ((this.name != "") && this.val.validate(this.name, 100))
     {
       // request to back end
-      this.http.get(`http://localhost:3000/api/open/schedules/full/${this.name}`).subscribe((data:any) => {
+      this.http.get(`/api/open/schedules/full/${this.name}`).subscribe((data:any) => {
         this.timeData = data; // get back end data object
       })
       console.log(`Searched for timetable data from schedule: ${this.name}`);

@@ -48,7 +48,7 @@ export class SecureComponent implements OnInit {
     });
 
     // get all courses to check for course validity
-    this.http.get("http://localhost:3000/api/admin/courses").subscribe((data:any) => {
+    this.http.get("/api/admin/courses").subscribe((data:any) => {
       this.cdata = data;
     })
   }
@@ -109,7 +109,7 @@ export class SecureComponent implements OnInit {
     if (this.cdata && (this.name != "") && this.val.validate(this.name, 100) && this.val.validate(this.description, 200) && this.val.validateNum(this.count, 0, 15))
     {
       // back end request to get username
-      this.http.get(`http://localhost:3000/api/open/users/${this.activeUser}`).subscribe((data:any) => {
+      this.http.get(`/api/open/users/${this.activeUser}`).subscribe((data:any) => {
 
         if (this.vis) // user wants their schedule to be visible
         {
@@ -192,7 +192,7 @@ export class SecureComponent implements OnInit {
         if (this.clear == true) // no illegal courses were found
         {
           // send request with schedule "obj" in the body and "name" in the URL
-          this.http.post(`http://localhost:3000/api/secure/schedules/${this.name}`, JSON.stringify(obj), reqHeader).subscribe((data: any) => {
+          this.http.post(`/api/secure/schedules/${this.name}`, JSON.stringify(obj), reqHeader).subscribe((data: any) => {
             this.backData = data; // get response as string
           })
           console.log(`Created schedule with name: ${this.name}`);
@@ -248,7 +248,7 @@ export class SecureComponent implements OnInit {
     if (this.cdata && (this.name != "") && this.val.validate(this.name, 100) && this.val.validate(this.description, 200) && this.val.validateNum(this.count, 0, 15))
     {
       // back end request to get username
-      this.http.get(`http://localhost:3000/api/open/users/${this.activeUser}`).subscribe((data:any) => {
+      this.http.get(`/api/open/users/${this.activeUser}`).subscribe((data:any) => {
 
         if (this.vis) // user wants their schedule to be visible
         {
@@ -331,7 +331,7 @@ export class SecureComponent implements OnInit {
         if (this.clear == true) // no illegal courses were found
         {
           // send request with schedule "obj" in the body and "name" in the URL
-          this.http.put(`http://localhost:3000/api/secure/schedules/${this.name}`, JSON.stringify(obj), reqHeader).subscribe((data: any) => {
+          this.http.put(`/api/secure/schedules/${this.name}`, JSON.stringify(obj), reqHeader).subscribe((data: any) => {
             this.backData = data; // get response as string
           })
           console.log(`Updated schedule with name: ${this.name}`);
@@ -408,7 +408,7 @@ export class SecureComponent implements OnInit {
           body: JSON.stringify(obj)
         }
 
-        this.http.delete(`http://localhost:3000/api/secure/schedules/${this.dname}`, reqH).subscribe((data: any) => {
+        this.http.delete(`/api/secure/schedules/${this.dname}`, reqH).subscribe((data: any) => {
           this.backData = data; // get response as string
         })
         console.log(`Deleted schedule with name: ${this.dname}`);
@@ -445,7 +445,7 @@ export class SecureComponent implements OnInit {
       if (this.subject != "" && this.course != "" && this.comment != "" && this.val.validate(this.subject, 8) && this.val.validate(this.course, 5) && this.val.validate(this.comment, 1000))
       {
         // back end request to get username
-        this.http.get(`http://localhost:3000/api/open/users/${this.activeUser}`).subscribe((data:any) => {
+        this.http.get(`/api/open/users/${this.activeUser}`).subscribe((data:any) => {
 
           // create empty review object
           let obj: Rev = {
@@ -484,7 +484,7 @@ export class SecureComponent implements OnInit {
             if (found == true) // the requested course exists
             {
               // request to send review to back end
-              this.http.post(`http://localhost:3000/api/secure/comments/${this.subject.toUpperCase()}/${this.course.toUpperCase()}`, JSON.stringify(obj), reqHeader).subscribe((data:any) => {
+              this.http.post(`/api/secure/comments/${this.subject.toUpperCase()}/${this.course.toUpperCase()}`, JSON.stringify(obj), reqHeader).subscribe((data:any) => {
                 this.backData = data; // get response from back end
               })
               console.log(`Created review for ${this.subject.toUpperCase()}: ${this.course.toUpperCase()}`);

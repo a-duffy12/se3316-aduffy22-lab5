@@ -46,7 +46,7 @@ export class LoginComponent implements OnInit {
       {
         this.auth.user$.subscribe((profile) => {
 
-          this.http.get(`http://localhost:3000/api/open/users/${profile.email}`).subscribe((data:any) => {
+          this.http.get(`/api/open/users/${profile.email}`).subscribe((data:any) => {
             this.savedProfile = data; // set returned data to the saved profile
 
             if (this.savedProfile.email == profile.email)
@@ -92,7 +92,7 @@ export class LoginComponent implements OnInit {
 
     if (this.userEmail && this.userPassword && this.val.validateEmail(this.userEmail) && this.val.validatePass(this.userPassword, 100))
     { // get request to see if the user already exists
-      this.http.get(`http://localhost:3000/api/open/users/${this.userEmail}`).subscribe((data:any) => {
+      this.http.get(`/api/open/users/${this.userEmail}`).subscribe((data:any) => {
         this.savedProfile = data; // set returned data to the saved profile
 
         let obj = { // build request body
@@ -100,7 +100,7 @@ export class LoginComponent implements OnInit {
         }
 
         // get request to see if passwords match
-        this.http.post(`http://localhost:3000/api/open/users/login/${this.userEmail}`, JSON.stringify(obj), reqHeader).subscribe((dataN:any) => {
+        this.http.post(`/api/open/users/login/${this.userEmail}`, JSON.stringify(obj), reqHeader).subscribe((dataN:any) => {
 
           if (data) // passwords do match
           {
@@ -193,7 +193,7 @@ export class LoginComponent implements OnInit {
           permission_level: "secure"
         }
         // send new user data to back end
-        this.http.post(`http://localhost:3000/api/open/users/${profile.email}`, JSON.stringify(newUser), reqHeader).subscribe((data:any) => {
+        this.http.post(`/api/open/users/${profile.email}`, JSON.stringify(newUser), reqHeader).subscribe((data:any) => {
           console.log(`Created user: ${profile.email}`)
           console.log(data);
         })
@@ -206,7 +206,7 @@ export class LoginComponent implements OnInit {
       if (this.userEmail && this.userPassword && this.userName && this.val.validateEmail(this.userEmail) && this.val.validatePass(this.userPassword, 100) && this.val.validate(this.userName, 20))
       {
         // get request to see if the user already exists
-        this.http.get(`http://localhost:3000/api/open/users/${this.userEmail}`).subscribe((data:any) => {
+        this.http.get(`/api/open/users/${this.userEmail}`).subscribe((data:any) => {
           this.error = `Cannot create a new account for existing user: ${data.email}`;
         },
         (error:any) => {
@@ -219,7 +219,7 @@ export class LoginComponent implements OnInit {
             permission_level: "secure"
           }
           // send new user data to back end
-          this.http.post(`http://localhost:3000/api/open/users/${this.userEmail}`, JSON.stringify(user), reqHeader).subscribe((data:any) => {
+          this.http.post(`/api/open/users/${this.userEmail}`, JSON.stringify(user), reqHeader).subscribe((data:any) => {
             console.log(`Created user: ${this.userEmail}`)
             console.log(data);
           })
@@ -265,7 +265,7 @@ export class LoginComponent implements OnInit {
       }
 
       // request to back end
-      this.http.put(`http://localhost:3000/api/secure/users/name/${this.activeUser}`, JSON.stringify(obj), reqHeader).subscribe((data:any) => {
+      this.http.put(`/api/secure/users/name/${this.activeUser}`, JSON.stringify(obj), reqHeader).subscribe((data:any) => {
         this.backData = data; // get reponse from the back end
       })
       console.log(`Updated username of user: ${this.activeUser}`);
@@ -300,7 +300,7 @@ export class LoginComponent implements OnInit {
       }
 
       // request to back end
-      this.http.put(`http://localhost:3000/api/secure/users/pass/${this.activeUser}`, JSON.stringify(obj), reqHeader).subscribe((data:any) => {
+      this.http.put(`/api/secure/users/pass/${this.activeUser}`, JSON.stringify(obj), reqHeader).subscribe((data:any) => {
         this.backData = data; // get reponse from the back end
       })
       console.log(`Updated password of user: ${this.activeUser}`);

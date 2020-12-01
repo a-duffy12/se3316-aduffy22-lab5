@@ -39,7 +39,7 @@ export class AdminComponent implements OnInit {
       if (this.activeUser)
       {
         // check to see if this user is an admin
-        this.http.get(`http://localhost:3000/api/open/users/${this.activeUser}`).subscribe((data:any) => {
+        this.http.get(`/api/open/users/${this.activeUser}`).subscribe((data:any) => {
           if (data.permission_level === "admin") // if user is an admin
           {
             this.ad = true; // reveal admin level content
@@ -69,7 +69,7 @@ export class AdminComponent implements OnInit {
       }
 
       // request to back end
-      this.http.put(`http://localhost:3000/api/admin/users/ad/${this.addUser}`, JSON.stringify(obj), reqHeader).subscribe((data:any) => {
+      this.http.put(`/api/admin/users/ad/${this.addUser}`, JSON.stringify(obj), reqHeader).subscribe((data:any) => {
         this.gData = data; // get response
       })
       console.log(`Gave admin privileges to user: ${this.addUser}`);
@@ -87,7 +87,7 @@ export class AdminComponent implements OnInit {
     this.reset(); // reset all member variables
 
     // request to the back end
-    this.http.get(`http://localhost:3000/api/admin/users`).subscribe((data:any) => {
+    this.http.get(`/api/admin/users`).subscribe((data:any) => {
       this.gData = data; // get data obejct from the back end
     })
   }
@@ -105,7 +105,7 @@ export class AdminComponent implements OnInit {
       }
 
       // request to back end
-      this.http.put(`http://localhost:3000/api/admin/comments/${this.subject.toUpperCase()}/${this.course.toUpperCase()}/${this.userEmail}`, JSON.stringify(obj), reqHeader).subscribe((data:any) => {
+      this.http.put(`/api/admin/comments/${this.subject.toUpperCase()}/${this.course.toUpperCase()}/${this.userEmail}`, JSON.stringify(obj), reqHeader).subscribe((data:any) => {
         this.rData = data; // get response from the back end
       })
       console.log(`Toggled visiblity for review of ${this.subject.toUpperCase()}: ${this.course.toUpperCase()} by ${this.userEmail}`);
@@ -153,7 +153,7 @@ export class AdminComponent implements OnInit {
     this.reset(); // reset all member variables
 
     // request to the back end
-    this.http.get(`http://localhost:3000/api/admin/comments`).subscribe((data:any) => {
+    this.http.get(`/api/admin/comments`).subscribe((data:any) => {
       this.rData = data; // get data obejct from the back end
     })
   }
@@ -171,7 +171,7 @@ export class AdminComponent implements OnInit {
       }
 
       // request to back end
-      this.http.put(`http://localhost:3000/api/admin/users/de/${this.deUser}`, JSON.stringify(obj), reqHeader).subscribe((data:any) => {
+      this.http.put(`/api/admin/users/de/${this.deUser}`, JSON.stringify(obj), reqHeader).subscribe((data:any) => {
         this.dData = data; // get response
       })
       console.log(`Gave admin privileges to user: ${this.deUser}`);
@@ -189,7 +189,7 @@ export class AdminComponent implements OnInit {
     this.reset(); // reset all member variables
 
     // request to the back end
-    this.http.get(`http://localhost:3000/api/admin/users`).subscribe((data:any) => {
+    this.http.get(`/api/admin/users`).subscribe((data:any) => {
       this.dData = data; // get data obejct from the back end
     })
   }

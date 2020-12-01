@@ -1,18 +1,1 @@
-[
-    {
-        "name": "Aiden",
-        "email": "aduffy22@uwo.ca",
-        "password": "$2b$12$6wCcHCtYu1cmvPD53a7Pl.kLH7SE5rXVATntH0Uq7hqEqGNEb0iNW",
-        "active": true,
-        "verified": true,
-        "permission_level": "admin"
-    },
-    {
-        "name": "12aduffy",
-        "password": "$2b$12$t4Jhi1cDtt/1JyPOFa/N8ucm/5trBTcuwu5jYK6c2OSG.SoUyuek2",
-        "active": true,
-        "verified": false,
-        "permission_level": "secure",
-        "email": "12aduffy@gmail.com"
-    }
-]
+[{"name":"Aiden","email":"aduffy22@uwo.ca","password":"$2b$12$6wCcHCtYu1cmvPD53a7Pl.kLH7SE5rXVATntH0Uq7hqEqGNEb0iNW","active":true,"verified":true,"permission_level":"admin"},{"name":"12aduffy","password":"$2b$12$t4Jhi1cDtt/1JyPOFa/N8ucm/5trBTcuwu5jYK6c2OSG.SoUyuek2","active":true,"verified":false,"permission_level":"secure","email":"12aduffy@gmail.com"},{"name":"phobospuzzlegame","password":"$2b$12$.yjvK90bbxxa2s7fYR.ECu5PkFGfQRjUD9B7UH7ocgHNaAjxgTGKq","active":true,"verified":true,"permission_level":"secure","email":"phobospuzzlegame@gmail.com"},{"name":"aidz","password":"$2b$12$L9olG2PyFdxb0WXO9GDeB.PwzyLPHwDwK0uWoFGhzQP/Ud16BJzKe","active":true,"verified":false,"permission_level":"secure","email":"94aduffy@gmail.com"}]

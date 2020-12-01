@@ -41,7 +41,7 @@ export class PolicyComponent implements OnInit {
       if (this.activeUser)
       {
         // check to see if this user is an admin
-        this.http.get(`http://localhost:3000/api/open/users/${this.activeUser}`).subscribe((data:any) => {
+        this.http.get(`/api/open/users/${this.activeUser}`).subscribe((data:any) => {
           if (data.permission_level === "admin") // if user is an admin
           {
             this.ad = true; // reveal admin level content
@@ -55,7 +55,7 @@ export class PolicyComponent implements OnInit {
     });
 
     // request to the back end
-    this.http.get(`http://localhost:3000/api/admin/users`).subscribe((data:any) => {
+    this.http.get(`/api/admin/users`).subscribe((data:any) => {
       this.uData = data; // get data obejct from the back end
     })
   }
@@ -133,7 +133,7 @@ export class PolicyComponent implements OnInit {
         }
 
         // request to back end
-        this.http.post(`http://localhost:3000/api/admin/dmca/${this.userEmail}`, JSON.stringify(obj), reqHeader).subscribe((data:any) => {
+        this.http.post(`/api/admin/dmca/${this.userEmail}`, JSON.stringify(obj), reqHeader).subscribe((data:any) => {
           this.dData = data; // get back end data object
         })
         console.log(`Created DMCA ${this.rType} record for ${this.userEmail} in regards to ${this.song} by ${this.artist}`);
@@ -167,7 +167,7 @@ export class PolicyComponent implements OnInit {
     this.reset(); // reset all member variables
 
     // request to the back end
-    this.http.get(`http://localhost:3000/api/admin/dmca`).subscribe((data:any) => {
+    this.http.get(`/api/admin/dmca`).subscribe((data:any) => {
       this.dData = data; // get data obejct from the back end
     })
   }
