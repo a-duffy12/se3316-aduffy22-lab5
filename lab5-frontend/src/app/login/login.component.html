@@ -4,17 +4,15 @@
   <p>Login with the options below to create your own schedules</p>
 </div>
 
-<div *ngIf="(auth.isAuthenticated$ | async) || loggedIn">
+<div *ngIf="loggedIn">
   <button (click)="logout()">Logout</button>
 </div>
 
-<div *ngIf="!(auth.isAuthenticated$ | async) && !loggedIn" class="section">
+<div *ngIf="!loggedIn" class="section">
   <h3>Login Locally</h3>
   <input type="text" placeholder="Email" [(ngModel)]="userEmail">
   <input type="password" placeholder="Password" [(ngModel)]="userPassword">
   <button (click)="login()">Login Locally</button>
-  <h3>Login via Third Party</h3>
-  <button (click)="loginA()">Login with Auth0</button>
 </div>
 
 <div *ngIf="newUser" class="section">
@@ -23,10 +21,6 @@
   <input type="password" placeholder="Password" [(ngModel)]="userPassword">
   <input type="text" placeholder="Username" [(ngModel)]="userName">
   <button (click)="register()">Register Locally</button>
-</div>
-
-<div *ngIf="done == 2">
-  <button (click)="register()">Register via Auth0</button>
 </div>
 
 <div *ngIf="activeUser" class="section">

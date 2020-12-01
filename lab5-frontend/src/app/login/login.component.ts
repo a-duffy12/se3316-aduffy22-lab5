@@ -1,5 +1,4 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { AuthService } from '@auth0/auth0-angular';
 import { DOCUMENT } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Validator } from '../validator.service';
@@ -32,54 +31,12 @@ export class LoginComponent implements OnInit {
   newUserPassword: string = "";
   exPassword: string = "";
 
-  constructor(@Inject(DOCUMENT) public document: Document, public auth: AuthService, private http: HttpClient, private val: Validator) {
+  constructor(@Inject(DOCUMENT) public document: Document, private http: HttpClient, private val: Validator) {
 
     // every second, update the active user variable
     this.subscription = interval(1000).subscribe(() => {
       this.activeUser = this.val.getActiveUser();
     });
-
-    // every second, check if the user logged in via Auth0
-    this.subscription = interval(1000).subscribe(() => {
-
-      if (this.auth.user$ && this.done == 0)
-      {
-        this.auth.user$.subscribe((profile) => {
-
-          this.http.get(`/api/open/users/${profile.email}`).subscribe((data:any) => {
-            this.savedProfile = data; // set returned data to the saved profile
-
-            if (this.savedProfile.email == profile.email)
-            {
-              if (!this.savedProfile.active) // if the user has been set to inactive
-              {
-                this.done = 1;
-                console.log(`User: ${profile.email} has been deactivated!`);
-                this.error = `User: ${profile.email} has been deactivated!`;
-                this.logout();
-                this.done = 0;
-              }
-              else
-              {
-                this.done = 1;
-                this.val.setActiveUser(String(profile.email)); // set active user
-                console.log(`Logging in user: ${profile.email}`);
-              }
-            }
-            else
-            {
-              this.done = 2;
-              console.log(`Need to register user: ${profile.email}`);
-            }
-          },
-          (error: any) => { // if the user does not exist
-            this.done = 2;
-            console.log(`Need to register user: ${profile.email}`);
-          })
-        })
-      }
-    });
-
    }
 
   ngOnInit(): void {
@@ -150,24 +107,10 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  // method to login via Auth0
-  loginA(): void
-  {
-    this.error = ""; // reset error message
-
-    this.auth.loginWithRedirect();
-  }
-
   // method to logout via Auth0
   logout(): void
   {
-    if (this.auth.user$) // if the user used auth0 to log in
-    {
-      this.auth.logout({ returnTo: this.document.location.origin }); // log out with auth0
-      this.val.setActiveUser(""); // set active user to an empty string
-      this.done = 0;
-    }
-    else if (this.loggedIn)
+    if (this.loggedIn)
     {
       console.log(`Logging out user: ${this.userEmail}`);
       this.loggedIn = false;
@@ -182,25 +125,7 @@ export class LoginComponent implements OnInit {
   {
     this.error = ""; // reset error message
 
-    if (this.auth.user$ && !this.newUser) // if the user is logged in with Auth0
-    {
-      this.auth.user$.subscribe((profile) => {
-        let newUser: PostUser = { // create JSON to send to back end
-          name: profile.nickname,
-          password: "3pAuth0L0gin$",
-          active: true,
-          verified: profile.email_verified,
-          permission_level: "secure"
-        }
-        // send new user data to back end
-        this.http.post(`/api/open/users/${profile.email}`, JSON.stringify(newUser), reqHeader).subscribe((data:any) => {
-          console.log(`Created user: ${profile.email}`)
-          console.log(data);
-        })
-      })
-      this.done = 0;
-    }
-    else if (this.newUser) // if the user is logged in locally
+    if (this.newUser) // if the user is logged in locally
     {
 
       if (this.userEmail && this.userPassword && this.userName && this.val.validateEmail(this.userEmail) && this.val.validatePass(this.userPassword, 100) && this.val.validate(this.userName, 20))
