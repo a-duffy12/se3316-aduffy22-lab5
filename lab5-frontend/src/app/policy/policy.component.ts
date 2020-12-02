@@ -19,6 +19,7 @@ export class PolicyComponent implements OnInit {
 
   // member variables to track what to show
   pol: boolean = false;
+  acc: boolean = false;
   dmca: boolean = false;
   proc: boolean = false;
   dData: any;
@@ -73,6 +74,19 @@ export class PolicyComponent implements OnInit {
     else if (!this.pol)
     {
       this.pol = true;
+    }
+  }
+
+  // method to show and hide acceptable use policy
+  showAU()
+  {
+    if (this.acc)
+    {
+      this.acc = false;
+    }
+    else if (!this.acc)
+    {
+      this.acc = true;
     }
   }
 
