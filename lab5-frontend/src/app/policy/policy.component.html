@@ -2,11 +2,16 @@
 
 <h3>View Web App Policies and Notices</h3>
 <button (click)="showPolicy()">Show / Hide Privacy Policy</button>
+<button (click)="showAU()">Show / Hide Acceptable Use Policy</button>
 <button (click)="showDMCA()">Show / Hide DMCA Notice</button>
 <p class="lft">Contact the site creator at aduffy22@uwo.ca for any questions or infringement concerns</p>
 
 <div *ngIf="pol" id="privacy-policy">
   <iframe src="https://docs.google.com/document/d/e/2PACX-1vQUwN669cYSYOCUqcXNToLvpvZXwxuD2-Ajhvha3u861EFXum8Bk8pvR8jPhC7AyxIpDR0VO9xZfk93/pub?embedded=true"></iframe>
+</div>
+
+<div *ngIf="acc" id="au-policy">
+  <iframe src="https://docs.google.com/document/d/e/2PACX-1vTon9pPCyv40hHxc2c5uSHfQ_9-l37axcNkbR-EBSTQVN43sKVQW8aFBfgBXFrTy_z-ViZl3T7LVgJ3/pub?embedded=true"></iframe>
 </div>
 
 <div *ngIf="dmca" id="dmca">
@@ -23,6 +28,11 @@
 <div *ngIf="ad" id="privacy-policy-mod">
   <p class="lft">Click the following link to modify the privacy policy</p>
   <a href="https://docs.google.com/document/d/1ZNCOgeDnLmnSf2-7Spf1IpR0CliLdkc1ine3kyv8nno/edit?usp=sharing" target="_blank">Edit Privacy Policy</a>
+</div>
+
+<div *ngIf="ad" id="au-policy-mod">
+  <p class="lft">Click the following link to modify the acceptable use policy</p>
+  <a href="https://docs.google.com/document/d/1fnHNrSWiOXsX-Okv9WdSWwfUFLIYhNPCP8buRmwC5rY/edit?usp=sharing" target="_blank">Edit Acceptable Use Policy</a>
 </div>
 
 <div *ngIf="ad" id="dmca-mod">
