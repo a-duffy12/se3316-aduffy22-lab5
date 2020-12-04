@@ -1021,9 +1021,9 @@ srouter.route("/schedules/:schedule") // all routers that access a particular sc
     })
 
 // get all schedules for a certain user
-srouter.get("/schedules", (req, res) => {
+srouter.get("/schedules/view/:creator", (req, res) => {
 
-    if (sanitizeInput(req.body))
+    if (sanitizeEmail(req.params.creator))
     {
         sdata = getData(j2data); // get up to date schedule data
 
@@ -1031,7 +1031,7 @@ srouter.get("/schedules", (req, res) => {
         
         for (s in sdata)
         {
-            if (req.body.creator === sdata[s].creator)
+            if (req.params.creator === sdata[s].creator)
             {
                 schedules.push(sdata[s]); // add schedule to array
             }

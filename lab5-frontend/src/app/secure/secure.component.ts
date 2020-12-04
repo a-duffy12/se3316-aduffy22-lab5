@@ -33,6 +33,8 @@ export class SecureComponent implements OnInit {
   cdata: any;
   backData: any;
   makeError: string = "";
+  viewData: any;
+  viewError: string = "";
   delError: string = "";
   revError: string = "";
 
@@ -379,6 +381,16 @@ export class SecureComponent implements OnInit {
     }
   }
 
+  // method to view all the schedules
+  viewSchedule()
+  {
+    this.reset(); // reset all member variables
+
+    this.http.get(`/api/secure/schedules/view/${this.activeUser}`).subscribe((data: any) => {
+      this.viewData = data; // geet back end response
+    })
+  }
+
   // method to begin 2-step deletion process
   deleteStart()
   {
@@ -547,6 +559,8 @@ export class SecureComponent implements OnInit {
     this.clear = true;
     this.backData = undefined;
     this.makeError = "";
+    this.viewData = undefined;
+    this.viewError = "";
     this.delError = "";
     this.con = false;
     this.del = "";

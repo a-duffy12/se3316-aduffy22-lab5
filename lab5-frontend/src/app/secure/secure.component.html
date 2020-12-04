@@ -27,6 +27,25 @@
 
 </div>
 
+<div *ngIf="activeUser" class="section" id="view">
+  <h3>View All Your Schedules</h3>
+  <button (click)="viewSchedule()">View</button>
+
+  <div *ngIf="viewError">
+    <p>{{viewError}}</p>
+  </div>
+
+  <div *ngIf="viewData">
+    <p>Displaying all your schedules</p>
+    <ul class="list">
+      <li *ngFor="let v of viewData" class="list-li">
+        <span>Schedule: {{v.name}}, last Modified: {{v.date_modified}}, contains {{v.course_count}} courses</span>
+      </li>
+    </ul>
+  </div>
+
+</div>
+
 <div *ngIf="activeUser" class="section" id="delete">
 
   <h3>Delete a Schedule</h3>
